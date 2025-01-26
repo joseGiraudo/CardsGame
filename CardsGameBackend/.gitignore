@@ -1,0 +1,16 @@
+# Build Folders
+bin/
+obj/
+
+**/bin/
+**/obj/
+*.csproj
+
+# User-specific files
+.vs/
+.idea/
+.vscode/
+
+# ASP.NET files
+appsettings.json
+appsettings.Development.json
