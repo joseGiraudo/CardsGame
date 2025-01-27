@@ -27,12 +27,15 @@ namespace ServicesLibrary.Services
 
             if (user == null)
             {
-                return null; // usuario o contraseña invalidos
+                return null; // usuario invalido
             }
 
-            //if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password)) {
-            //    return null;
-            //}
+            // ver que pasa cuando la password no se guardo hasheada en la BD
+
+            if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
+            {
+                return null; // contraseña invalida
+            }
 
             var token = _tokenService.GenerateToken(user);
             return token;
