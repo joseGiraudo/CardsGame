@@ -26,6 +26,9 @@ builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ITournamentDAO, TournamentDAO>();
 builder.Services.AddScoped<ITournamentService, TournamentService>();
 
+builder.Services.AddScoped<IGameDAO, GameDAO>();
+builder.Services.AddScoped<IGameService, GameService>();
+
 
 
 builder.Services.AddCors(options =>

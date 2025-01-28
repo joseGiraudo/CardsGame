@@ -9,10 +9,12 @@ namespace WebApi.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly ITournamentService _tournamentService;
+        private readonly IGameService _gameService;
 
-        public TournamentController(ITournamentService tournamentService)
+        public TournamentController(ITournamentService tournamentService, IGameService gameService)
         {
             _tournamentService = tournamentService;
+            _gameService = gameService;
         }
 
 
@@ -38,6 +40,15 @@ namespace WebApi.Controllers
             var tournament = await _tournamentService.Create(tournamentDTO);
 
             return Ok(tournament);
+        }
+
+
+        [HttpGet("{id}/games")]
+        public async Task<IActionResult> GetGamesById(int id)
+        {
+            var games = await _gameService.GetByTournamentId(id);
+
+            return Ok(games);
         }
     }
 }

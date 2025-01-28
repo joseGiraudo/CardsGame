@@ -27,6 +27,8 @@ namespace DataAccessLibrary.DAOs
                 "VALUES(@name, @startDate, @endDate, @countryId, @phase); " +
                 "SELECT LAST_INSERT_ID;";
 
+            // falta el organizerId
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
