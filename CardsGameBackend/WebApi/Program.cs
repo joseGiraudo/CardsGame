@@ -20,6 +20,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<ICardDAO, CardDAO>();
+builder.Services.AddScoped<ICardService, CardService>();
+
 
 
 

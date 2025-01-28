@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ModelsLibrary.Models;
+using ServicesLibrary.Services;
 using ServicesLibrary.Services.Interface;
 
 namespace WebApi.Controllers
@@ -20,6 +21,14 @@ namespace WebApi.Controllers
         {
             var users = await _userService.GetAll();
             return Ok(users);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAllCards(int id)
+        {
+            var user = await _userService.GetById(id);
+            return Ok(user);
         }
 
         [HttpPost]

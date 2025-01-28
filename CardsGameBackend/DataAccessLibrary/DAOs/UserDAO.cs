@@ -86,9 +86,21 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<User> GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            throw new NotImplementedException();
+            string query = @"SELECT * FROM users WHERE id = @id";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                var user = await connection.QueryFirstOrDefaultAsync<User>(query, new {id = id});
+                if (user == null)
+                {
+                    throw new Exception("Usuario no encontrado");
+                }
+
+                return user;
+            }
         }
 
         public Task<int> Update(User user)

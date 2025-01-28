@@ -3,32 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccessLibrary.DAOs;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
 {
-    public class UserService : IUserService
+    public class CardService : ICardService
     {
-        private readonly IUserDAO _userDAO;
+        private readonly ICardDAO _cardDAO;
 
-        public UserService(IUserDAO userDAO)
+        public CardService(ICardDAO cardDAO)
         {
-            _userDAO = userDAO;
+            _cardDAO = cardDAO;
         }
 
 
-        public async Task<User> Create(User user)
+        public async Task<Card> Create(Card card)
         {
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            
-            if(await _userDAO.Create(user) > 0)
+            try
             {
-                return user;
-            }
+                var cardId = await _cardDAO.Create(card);
 
-            return null;
+                return card;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public Task<string> DeleteById(int id)
@@ -36,13 +39,13 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<List<Card>> GetAll()
         {
             try
             {
-                var users = await _userDAO.GetAll();
+                var cards = await _cardDAO.GetAll();
 
-                return (List<User>)users;
+                return (List<Card>) cards;
             }
             catch (Exception ex)
             {
@@ -50,13 +53,13 @@ namespace ServicesLibrary.Services
             }
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<Card> GetById(int id)
         {
             try
             {
-                var user = await _userDAO.GetById(id);
+                var card = await _cardDAO.GetById(id);
 
-                return user;
+                return card;
             }
             catch (Exception ex)
             {
@@ -64,7 +67,7 @@ namespace ServicesLibrary.Services
             }
         }
 
-        public Task<User> Update(User user)
+        public Task<Card> Update(Card card)
         {
             throw new NotImplementedException();
         }

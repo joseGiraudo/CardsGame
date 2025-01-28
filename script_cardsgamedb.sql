@@ -89,7 +89,7 @@ CREATE TABLE tournaments (
     name VARCHAR(100) NOT NULL,
     startDate DATETIME NOT NULL,
     endDate DATETIME,
-    country VARCHAR(50),
+    country VARCHAR(50), -- cambiar a countryId y referenciarlo
     phase ENUM('Registro', 'Torneo', 'Finalizado') DEFAULT 'Registro',
     organizerId INT NOT NULL,
     winnerId INT, -- Ganador del torneo
