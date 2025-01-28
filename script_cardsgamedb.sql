@@ -1,5 +1,6 @@
-CREATE DATABASE cardsgamedb;
+-- drop DATABASE cardsgamedb;
 
+CREATE DATABASE cardsgamedb;
 USE cardsgamedb;
 
 -- Tabla de países
@@ -7,14 +8,6 @@ CREATE TABLE countries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(70) NOT NULL
 );
-
-INSERT INTO countries (NAME) VALUES('ARG')
-
- INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Jugador', NULL);
-
- SELECT * FROM users
-
 
 -- Tabla de usuarios
 CREATE TABLE users (
@@ -32,6 +25,12 @@ CREATE TABLE users (
     FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE SET NULL
 );
 
+INSERT INTO countries (NAME) VALUES('ARG');
+
+INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
+ VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Jugador', NULL);
+
+ SELECT * FROM users;
 -- Tabla de cartas
 CREATE TABLE cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -88,11 +87,12 @@ CREATE TABLE tournaments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     startDate DATETIME NOT NULL,
-    endDate DATETIME,
-    country VARCHAR(50), -- cambiar a countryId y referenciarlo
+    endDate DATETIME NOT NULL,
+    countryId INT,
     phase ENUM('Registro', 'Torneo', 'Finalizado') DEFAULT 'Registro',
     organizerId INT NOT NULL,
     winnerId INT, -- Ganador del torneo
+    FOREIGN KEY (countryId) REFERENCES countries(id) ON DELETE SET NULL,
     FOREIGN KEY (organizerId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (winnerId) REFERENCES users(id) ON DELETE SET NULL
 );

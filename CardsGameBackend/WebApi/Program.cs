@@ -23,6 +23,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICardDAO, CardDAO>();
 builder.Services.AddScoped<ICardService, CardService>();
 
+builder.Services.AddScoped<ITournamentDAO, TournamentDAO>();
+builder.Services.AddScoped<ITournamentService, TournamentService>();
 
 
 

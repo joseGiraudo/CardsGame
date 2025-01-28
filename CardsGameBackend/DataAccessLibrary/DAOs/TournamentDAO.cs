@@ -21,9 +21,26 @@ namespace DataAccessLibrary.DAOs
         }
 
 
-        public Task<int> Create(Tournament tournament)
+        public async Task<int> Create(Tournament tournament)
         {
-            throw new NotImplementedException();
+            string query = @"INSERT INTO tournaments(name, startDate, endDate, countryId, phase) " +
+                "VALUES(@name, @startDate, @endDate, @countryId, @phase); " +
+                "SELECT LAST_INSERT_ID;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                var tournamentId = await connection.ExecuteScalarAsync<int>(query,
+                    new
+                    {
+                        name = tournament.Name,
+                        startDate = tournament.StartDate,
+                        endDate = tournament.EndDate,
+                        countryId = tournament.CountryId,
+                        phase = tournament.Phase,
+                    });
+                return tournamentId;
+            }
         }
 
         public Task<int> Delete(int id)
