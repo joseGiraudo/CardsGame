@@ -24,7 +24,7 @@ namespace DataAccessLibrary.DAOs
         {
             string query = @"INSERT INTO games (tournamentId, startDate, player1, player2) " +
                 " VALUES (@tournamentId, @startDate, @player1, @player2);" +
-                " SELECT LAST_INSERT_ID;";
+                " SELECT LAST_INSERT_ID();";
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
@@ -81,7 +81,7 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<IEnumerable<Game>> GetByTournamentId(int tournamentId)
         {
-            string query = @"SELECT * FROM games WHERE toutnamentId = @id";
+            string query = @"SELECT * FROM games WHERE tournamentId = @id";
 
             using (var connection = new MySqlConnection(_connectionString))
             {

@@ -50,5 +50,13 @@ namespace WebApi.Controllers
 
             return Ok(games);
         }
+
+        // registro de un player a un torneo
+        [HttpPost("{id}/register")]
+        public async Task<IActionResult> TournamentRegistration(int id)
+        {
+            
+            throw new NotImplementedException();
+        }
     }
 }

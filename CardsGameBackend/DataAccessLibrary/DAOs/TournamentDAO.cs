@@ -23,9 +23,9 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<int> Create(Tournament tournament)
         {
-            string query = @"INSERT INTO tournaments(name, startDate, endDate, countryId, phase) " +
-                "VALUES(@name, @startDate, @endDate, @countryId, @phase); " +
-                "SELECT LAST_INSERT_ID;";
+            string query = @"INSERT INTO tournaments(name, startDate, endDate, countryId, phase, organizerId) " +
+                "VALUES(@name, @startDate, @endDate, @countryId, @phase, @organizerId); " +
+                "SELECT LAST_INSERT_ID();";
 
             // falta el organizerId
 
@@ -40,6 +40,7 @@ namespace DataAccessLibrary.DAOs
                         endDate = tournament.EndDate,
                         countryId = tournament.CountryId,
                         phase = tournament.Phase,
+                        organizerId = tournament.OrganizerId,
                     });
                 return tournamentId;
             }

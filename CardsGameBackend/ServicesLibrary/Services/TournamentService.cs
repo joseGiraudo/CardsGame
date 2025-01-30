@@ -21,16 +21,25 @@ namespace ServicesLibrary.Services
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
         {
-            if (tournamentDTO.EndDate > tournamentDTO.StartDate)
+            if (tournamentDTO.EndDate <= tournamentDTO.StartDate)
             {
-                throw new Exception("la fecha de finalizacion no debe ser mayor a la de comienzo");
+                throw new Exception("la fecha de finalizacion debe ser mayor a la de comienzo");
             }
             // ver que otras validaciones hay
+
+
+
+
+
             Tournament tournament = new Tournament();
             tournament.Name = tournamentDTO.Name;
-            tournament.StartDate = tournamentDTO.StartDate;
-            tournament.EndDate = tournamentDTO.EndDate;
+            // convierto las fechas a universal time para guardarla en la BD
+            tournament.StartDate = tournamentDTO.StartDate.ToUniversalTime();
+            tournament.EndDate = tournamentDTO.EndDate.ToUniversalTime();
             tournament.CountryId = tournamentDTO.CountryId;
+
+            // este dato debo tomarlo del usuario logueado
+            tournament.OrganizerId = 1;
 
             await _tournamentDAO.Create(tournament);
 
@@ -45,6 +54,12 @@ namespace ServicesLibrary.Services
         public async Task<List<Tournament>> GetAll()
         {
             var tournaments = await _tournamentDAO.GetAll();
+
+
+            // aca tengo que convertir las fechas que traigo en utc al horario del usuario logueado
+            // o del pais del torneo
+
+
 
             return (List<Tournament>)tournaments;
         }

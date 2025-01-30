@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ModelsLibrary.DTOs.Users;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services;
 using ServicesLibrary.Services.Interface;
@@ -32,15 +33,28 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
+        public async Task<IActionResult> CreatePlayer(PlayerDTO playerDto)
         {
-            if (user == null)
+            if (playerDto == null)
             {
                 return BadRequest("Los campos son incorrectos");
             }
 
-            var userCreated = await _userService.Create(user);
+            var userCreated = await _userService.CreatePlayer(playerDto);
             return Ok(userCreated);
         }
+
+        // metodo para crear jueces y organizadores
+        //[HttpPost]
+        //public async Task<IActionResult> CreateUser(User user)
+        //{
+        //    if (user == null)
+        //    {
+        //        return BadRequest("Los campos son incorrectos");
+        //    }
+
+        //    var userCreated = await _userService.Create(user);
+        //    return Ok(userCreated);
+        //}
     }
 }

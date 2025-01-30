@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
+using ModelsLibrary.DTOs.Users;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
@@ -19,13 +20,28 @@ namespace ServicesLibrary.Services
         }
 
 
-        public async Task<User> Create(User user)
+        public async Task<User> CreatePlayer(PlayerDTO playerDTO)
         {
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            
-            if(await _userDAO.Create(user) > 0)
+
+            // primero verificar que no exista un user con ese email
+            var user = await GetByEmail(playerDTO.Email);
+            if(user != null)
             {
-                return user;
+                throw new Exception("El email ya se encuentra registrado");
+            }
+
+
+            User player = new User();
+            player.Name = playerDTO.Name;
+            player.Email = playerDTO.Email;
+            player.Username = playerDTO.Username;
+            player.Password = BCrypt.Net.BCrypt.HashPassword(playerDTO.Password);
+            player.Avatar = playerDTO.Avatar;
+            player.Role = "Player";
+            
+            if(await _userDAO.Create(player) > 0)
+            {
+                return player;
             }
 
             return null;
@@ -55,6 +71,20 @@ namespace ServicesLibrary.Services
             try
             {
                 var user = await _userDAO.GetById(id);
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<User> GetByEmail(string email)
+        {
+            try
+            {
+                var user = await _userDAO.GetByEmail(email);
 
                 return user;
             }

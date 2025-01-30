@@ -115,6 +115,9 @@ CREATE TABLE tournament_judges (
     FOREIGN KEY (judgeId) REFERENCES users(id) ON DELETE CASCADE
 );
 
+
+-- CREAR TABLA DE TOURNAMENTS_PLAYERS
+
 -- Juegos dentro de torneos
 CREATE TABLE games (
     id INT AUTO_INCREMENT PRIMARY KEY,
