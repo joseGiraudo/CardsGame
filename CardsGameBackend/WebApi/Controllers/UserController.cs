@@ -35,9 +35,9 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePlayer(PlayerDTO playerDto)
         {
-            if (playerDto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Los campos son incorrectos");
+                return BadRequest(ModelState);
             }
 
             var userCreated = await _userService.CreatePlayer(playerDto);

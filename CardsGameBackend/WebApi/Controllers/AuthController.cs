@@ -18,6 +18,11 @@ namespace WebApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var token = await _authService.Authenticate(loginDTO);
 
             if (token == null)

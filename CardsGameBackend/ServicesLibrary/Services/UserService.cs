@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Users;
+using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
@@ -24,20 +25,22 @@ namespace ServicesLibrary.Services
         {
 
             // primero verificar que no exista un user con ese email
-            var user = await GetByEmail(playerDTO.Email);
-            if(user != null)
+            //var user = await GetByEmail(playerDTO.Email);
+            //if(user != null)
+            //{
+            //    throw new Exception("El email ya se encuentra registrado");
+            //}
+
+
+            User player = new User()
             {
-                throw new Exception("El email ya se encuentra registrado");
-            }
-
-
-            User player = new User();
-            player.Name = playerDTO.Name;
-            player.Email = playerDTO.Email;
-            player.Username = playerDTO.Username;
-            player.Password = BCrypt.Net.BCrypt.HashPassword(playerDTO.Password);
-            player.Avatar = playerDTO.Avatar;
-            player.Role = "Player";
+                Name = playerDTO.Name,
+                Email = playerDTO.Email,
+                Username = playerDTO.Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(playerDTO.Password),
+                Avatar = playerDTO.Avatar,
+                Role = UserRole.Player,
+            };
             
             if(await _userDAO.Create(player) > 0)
             {

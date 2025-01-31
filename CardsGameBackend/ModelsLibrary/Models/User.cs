@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ModelsLibrary.Enums;
 
 namespace ModelsLibrary.Models
 {
@@ -15,7 +16,7 @@ namespace ModelsLibrary.Models
         public string Password { get; set; }
         public int? CountryId { get; set; }
         public string Avatar { get; set; }
-        public string Role { get; set; } // Se maneja como string para mapear el ENUM en la base de datos
+        public UserRole Role { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
     }
