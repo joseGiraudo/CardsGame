@@ -14,11 +14,13 @@ namespace ServicesLibrary.Services
     {
         private readonly IUserDAO _userDAO;
         private readonly ITokenService _tokenService;
+        private readonly ITokenDAO _tokenDAO;
 
-        public AuthService(IUserDAO userDAO, ITokenService tokenService)
+        public AuthService(IUserDAO userDAO, ITokenService tokenService, ITokenDAO tokenDAO)
         {
             _userDAO = userDAO;
             _tokenService = tokenService;
+            _tokenDAO = tokenDAO;
         }
 
         public async Task<string> Authenticate(LoginDTO loginDTO)

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccessLibrary.DAOs.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ModelsLibrary.Models;
@@ -15,10 +17,12 @@ namespace ServicesLibrary.Services
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
+        private readonly ITokenDAO _tokenDAO;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, ITokenDAO tokenDAO)
         {
             _configuration = configuration;
+            _tokenDAO = tokenDAO;
         }
 
         // Methods
@@ -45,11 +49,38 @@ namespace ServicesLibrary.Services
                     issuer: jwtSettings["Issuer"],
                     audience: jwtSettings["Audience"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(120),
+                    expires: DateTime.Now.AddMinutes(10),
                     signingCredentials: credentials
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+        public string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
+        public async Task SaveRefreshToken(int userId, string refreshToken)
+        {
+            await _tokenDAO.SaveRefreshToken(userId, refreshToken);
+        }
+
+
+        public async Task<int?> ValidateRefreshToken(string refreshToken)
+        {
+            var tokenData = await _tokenDAO.GetRefreshToken(refreshToken);
+            if (tokenData == null || tokenData.Expiration < DateTime.UtcNow)
+            {
+                return null;
+            }
+            return tokenData.UserId;
+        }
+
+        public async Task DeleteRefreshToken(string refreshToken)
+        {
+            await _tokenDAO.DeleteRefreshToken(refreshToken);
         }
     }
 }

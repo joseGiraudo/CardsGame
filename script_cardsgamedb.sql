@@ -18,7 +18,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     countryId INT,
     avatar VARCHAR(255),
-    role ENUM('Administrador', 'Organizador', 'Juez', 'Jugador') NOT NULL,
+    role ENUM('Admin', 'Organizer', 'Judge', 'Player') NOT NULL,
     createdBy INT, -- Referencia al usuario que lo creó
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (countryId) REFERENCES countries(id) ON DELETE SET NULL,
@@ -28,7 +28,7 @@ CREATE TABLE users (
 INSERT INTO countries (NAME) VALUES('ARG');
 
 INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Jugador', NULL);
+ VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
 
  SELECT * FROM users;
 -- Tabla de cartas
@@ -142,3 +142,11 @@ CREATE TABLE disqualifications (
     FOREIGN KEY (judgeId) REFERENCES users(id) ON DELETE CASCADE
 );
    
+CREATE TABLE refresh_tokens (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	userId INT NOT NULL,
+	token VARCHAR(255) NOT NULL,
+	expiration DATETIME NOT NULL,
+   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);

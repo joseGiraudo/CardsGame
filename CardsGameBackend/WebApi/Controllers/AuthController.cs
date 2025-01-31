@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using ModelsLibrary.DTOs.Auth;
 using ServicesLibrary.Services.Interface;
 
@@ -32,5 +33,19 @@ namespace WebApi.Controllers
 
             return Ok(new { token });
         }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            return Ok(new { message = "Log Out" });
+        }
+
+        //[HttpPost("refresh-token")]
+        //public async Task<IActionResult> RefreshTokenAsync()
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+        //}
     }
 }
