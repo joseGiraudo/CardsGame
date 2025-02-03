@@ -20,6 +20,61 @@ namespace DataAccessLibrary.DAOs
             _connectionString = configuration.GetConnectionString("ConnectionString");
         }
 
+
+
+        public async Task CreateRefreshToken(int userId, string token, DateTime expiration)
+        {
+            string sql = @"INSERT INTO refresh_tokens (userId, token, expiration) 
+                        VALUES (@UserId, @Token, @Expiration)";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, new
+                {
+                    UserId = userId,
+                    Token = token,
+                    Expiration = expiration
+                });
+            }
+        }
+
+        public async Task<RefreshToken> GetRefreshToken(string token)
+        {
+            string sql = @"
+            SELECT * FROM refresh_tokens 
+            WHERE token = @Token AND expiration > NOW()";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return await connection.QueryFirstOrDefaultAsync<RefreshToken>(sql, new { Token = token });
+            }
+        }
+
+
+        public async Task DeleteExpiredTokens()
+        {
+            string sql = "DELETE FROM refresh_tokens WHERE expiration <= NOW()";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql);
+            }
+        }
+
+        public async Task DeleteUserTokens(int userId)
+        {
+            string sql = "DELETE FROM refresh_tokens WHERE userId = @UserId";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(sql, new { UserId = userId });
+            }
+        }
+
+        // ------------------------------------------------------------
+
+
+        /*
         public async Task<RefreshToken?> GetRefreshToken(string token)
         {
             string query = @"SELECT user_id, token, expiration FROM refresh_tokens WHERE token = @token";
@@ -70,5 +125,6 @@ namespace DataAccessLibrary.DAOs
                 return tokenData.UserId;
             }
         }
+        */
     }
 }
