@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelsLibrary.Enums
+namespace ModelsLibrary.Models
 {
-    public enum TournamentPhase
+    public class Country
     {
-        Registration,
-        InProgress,
-        Finished
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

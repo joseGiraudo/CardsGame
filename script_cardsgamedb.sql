@@ -31,6 +31,8 @@ INSERT INTO users (name, username, email, password, countryId, avatar, role, cre
  VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
 
  SELECT * FROM users;
+ 
+ 
 -- Tabla de cartas
 CREATE TABLE cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,8 +70,8 @@ CREATE TABLE collections (
 -- Mazos de cartas de un jugador
 CREATE TABLE decks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    playerId INT NOT NULL,
-    tournamentId INT NOT NULL,
+    playerId INT NOT NULL
+    name VARCHAR(50),
     FOREIGN KEY (playerId) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -89,7 +91,7 @@ CREATE TABLE tournaments (
     startDate DATETIME NOT NULL,
     endDate DATETIME NOT NULL,
     countryId INT,
-    phase ENUM('Registro', 'Torneo', 'Finalizado') DEFAULT 'Registro',
+    phase ENUM('Registration', 'InProgress', 'Finished') DEFAULT 'Registration',
     organizerId INT NOT NULL,
     winnerId INT, -- Ganador del torneo
     FOREIGN KEY (countryId) REFERENCES countries(id) ON DELETE SET NULL,
@@ -106,6 +108,17 @@ CREATE TABLE tournament_series (
     FOREIGN KEY (seriesId) REFERENCES series(id) ON DELETE CASCADE
 );
 
+CREATE TABLE tournament_players (
+    tournamentId INT,
+    playerId INT,
+    deckId INT, -- Referencia al mazo del jugador para este torneo
+    isEliminated BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (tournamentId, playerId),
+    FOREIGN KEY (tournamentId) REFERENCES tournaments(Id),
+    FOREIGN KEY (playerId) REFERENCES users(Id),
+    FOREIGN KEY (deckId) REFERENCES decks(Id)
+);
+
 -- Jueces asignados a torneos
 CREATE TABLE tournament_judges (
     tournamentId INT NOT NULL,
@@ -115,8 +128,6 @@ CREATE TABLE tournament_judges (
     FOREIGN KEY (judgeId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-
--- CREAR TABLA DE TOURNAMENTS_PLAYERS
 
 -- Juegos dentro de torneos
 CREATE TABLE games (
@@ -136,9 +147,11 @@ CREATE TABLE games (
 CREATE TABLE disqualifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     playerId INT NOT NULL,
+    tournamentId INT NOT NULL,
     judgeId INT NOT NULL,
     reason VARCHAR(255),
     FOREIGN KEY (playerId) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (tournamentId) REFERENCES tournaments(id) ON DELETE CASCADE,
     FOREIGN KEY (judgeId) REFERENCES users(id) ON DELETE CASCADE
 );
    

@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace ModelsLibrary.Models
 {
-    public class Game
+    public class Disqualification
     {
         public int Id { get; set; }
+        public int PlayerId { get; set; }
         public int TournamentId { get; set; }
-        public DateTime StartDate { get; set; }
-        public int Player1Id {  get; set; }
-        public int Player2Id { get; set; }
-        public int? WinnerId { get; set; }
+        public int JudgeId { get; set; }
+        public string Reason { get; set; }
     }
 }
