@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using DataAccessLibrary.DAOs.Interface;
 using Microsoft.Extensions.Configuration;
+using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
 using MySqlConnector;
 
@@ -21,13 +22,11 @@ namespace DataAccessLibrary.DAOs
         }
 
 
-        public async Task<int> Create(Tournament tournament)
+        public async Task<int> CreateAsync(Tournament tournament)
         {
             string query = @"INSERT INTO tournaments(name, startDate, endDate, countryId, phase, organizerId) " +
                 "VALUES(@name, @startDate, @endDate, @countryId, @phase, @organizerId); " +
                 "SELECT LAST_INSERT_ID();";
-
-            // falta el organizerId
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -46,12 +45,12 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<int> Delete(int id)
+        public Task<int> DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Tournament>> GetAll()
+        public async Task<IEnumerable<Tournament>> GetAllAsync()
         {
             string query = "SELECT * FROM tournaments";
 
@@ -68,7 +67,7 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<Tournament> GetById(int id)
+        public async Task<Tournament> GetByIdAsync(int id)
         {
             string query = "SELECT * FROM tournaments WHERE id = @id";
 
@@ -85,9 +84,36 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<int> Update(Tournament tournament)
+        public async Task UpdateAsync(Tournament tournament)
         {
-            throw new NotImplementedException();
+            string query = "UPDATE tournaments SET phase = @Phase, winnerId = @WinnerId " +
+                            "WHERE id = @Id;";
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                await connection.ExecuteAsync(query, new
+                {
+                    Phase = tournament.Phase,
+                    WinnerId = tournament.WinnerId,
+                    Id = tournament.Id
+                });
+            }
+        }
+
+        public async Task<IEnumerable<Tournament>> GetByPhaseAsync(TournamentPhase phase)
+        {
+            string query = "SELECT * FROM tournaments WHERE phase = @phase";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                var tournaments = await connection.QueryAsync<Tournament>(query, new { phase = phase });
+                if (tournaments == null || tournaments.Count() < 1)
+                {
+                    throw new Exception("No se encontraron torneos");
+                }
+
+                return tournaments;
+            }
         }
     }
 }

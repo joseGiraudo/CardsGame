@@ -78,9 +78,27 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<int> Update(Card card)
+        public async Task<int> Update(Card card)
         {
-            throw new NotImplementedException();
+            string query = @"UPDATE cards 
+                 SET name = @name, 
+                     attack = @attack, 
+                     defense = @defense, 
+                     illustration = @illustration 
+                 WHERE id = @id;";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                return await connection.ExecuteAsync(query, new
+                {
+                    name = card.Name,
+                    attack = card.Attack,
+                    defense = card.Defense,
+                    illustration = card.Illustration,
+                    id = card.Id
+                });
+            }
         }
     }
 }

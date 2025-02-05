@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccessLibrary.DAOs;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Tournament;
+using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
@@ -13,10 +15,14 @@ namespace ServicesLibrary.Services
     public class TournamentService : ITournamentService
     {
         private readonly ITournamentDAO _tournamentDAO;
+        private readonly ITournamentPlayerDAO _tournamentPlayerDAO;
+        private readonly IGameDAO _gameDAO;
 
-        public TournamentService(ITournamentDAO tournamentDAO)
+        public TournamentService(ITournamentDAO tournamentDAO, ITournamentPlayerDAO tournamentPlayerDAO, IGameDAO gameDAO)
         {
             _tournamentDAO = tournamentDAO;
+            _tournamentPlayerDAO = tournamentPlayerDAO;
+            _gameDAO = gameDAO;
         }
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
@@ -27,24 +33,113 @@ namespace ServicesLibrary.Services
             }
             // ver que otras validaciones hay
 
+            Tournament tournament = new Tournament
+            {
+                Name = tournamentDTO.Name,
+                StartDate = tournamentDTO.StartDate,
+                EndDate = tournamentDTO.EndDate,
+                CountryId = tournamentDTO.CountryId,
+                OrganizerId = tournamentDTO.OrganizerId,
+                Phase = TournamentPhase.Registration
+            };
 
-
-
-
-            Tournament tournament = new Tournament();
-            tournament.Name = tournamentDTO.Name;
-            // convierto las fechas a universal time para guardarla en la BD
-            tournament.StartDate = tournamentDTO.StartDate.ToUniversalTime();
-            tournament.EndDate = tournamentDTO.EndDate.ToUniversalTime();
-            tournament.CountryId = tournamentDTO.CountryId;
-
-            // este dato debo tomarlo del usuario logueado
-            tournament.OrganizerId = 1;
-
-            await _tournamentDAO.Create(tournament);
+            tournament.Id = await _tournamentDAO.CreateAsync(tournament);
 
             return tournament;
         }
+
+        public async Task AdvanceTournamentPhase(int tournamentId)
+        {
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+
+            switch (tournament.Phase)
+            {
+                case TournamentPhase.Registration:
+                    await StartTournament(tournament);
+                    break;
+                case TournamentPhase.InProgress:
+                    await ScheduleNextRound(tournament);
+                    break;
+            }
+        }
+
+        private async Task StartTournament(Tournament tournament)
+        {
+            // Validate player registrations
+            var players = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
+
+            if (players.Count < 2)
+                throw new InvalidOperationException("Not enough players to start tournament");
+
+            // Schedule initial round
+            await CreateNextRoundGames(tournament, players);
+
+            tournament.Phase = TournamentPhase.InProgress;
+            await _tournamentDAO.UpdateAsync(tournament);
+        }
+
+        private async Task ScheduleNextRound(Tournament tournament)
+        {
+            // Get winners from previous round
+            var winners = await _tournamentPlayerDAO.GetRoundWinnersAsync(tournament.Id);
+
+            if (winners.Count() <= 1)
+            {
+                // Final round or tournament complete
+                await FinalizeTournament(tournament, winners.FirstOrDefault().PlayerId);
+                return;
+            }
+
+            // Create next round games
+            await CreateNextRoundGames(tournament, winners);
+        }
+
+        private async Task CreateNextRoundGames(Tournament tournament, List<TournamentPlayer> players)
+        {
+            // ver si sirve desordenar la lista
+
+            List<Game> games = new List<Game>();
+
+            if(players.Count % 2 != 0)
+            {
+                TournamentPlayer lastPlayer = players.Last();
+                var game = new Game
+                {
+                    TournamentId = tournament.Id,
+                    Player1Id = lastPlayer.PlayerId,
+                    Player2Id = lastPlayer.PlayerId, // ver si admito valores null para el player 2 o como manejarlo
+                    WinnerId = lastPlayer.PlayerId
+                };
+                // lo guardo en la BD
+                await _gameDAO.Create(game);
+                games.Add(game);
+            }
+
+            for (int i = 0; i < players.Count - 1; i += 2)
+            {
+                // crear un Game con 2 jugadores
+                var game = new Game
+                {
+                    TournamentId = tournament.Id,
+                    Player1Id = players[i].PlayerId,
+                    Player2Id = players[i + 1].PlayerId,
+                    WinnerId = null
+                    // falta el start date
+                };
+                // lo guardo en la BD
+                await _gameDAO.Create(game);
+                games.Add(game);
+            }
+        }
+
+        private async Task FinalizeTournament(Tournament tournament, int winnerId)
+        {
+            tournament.Phase = TournamentPhase.Finished;
+            tournament.WinnerId = winnerId;
+            await _tournamentDAO.UpdateAsync(tournament);
+        }
+
+        
 
         public Task<string> DeleteById(int id)
         {

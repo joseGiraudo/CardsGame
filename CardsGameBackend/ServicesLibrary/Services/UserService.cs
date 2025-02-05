@@ -21,7 +21,7 @@ namespace ServicesLibrary.Services
         }
 
 
-        public async Task<User> CreatePlayer(PlayerDTO playerDTO)
+        public async Task<User> CreatePlayer(UserDTO playerDTO)
         {
 
             // primero verificar que no exista un user con ese email
@@ -45,6 +45,35 @@ namespace ServicesLibrary.Services
             if(await _userDAO.Create(player) > 0)
             {
                 return player;
+            }
+
+            return null;
+        }
+
+        public async Task<User> CreateJudge(UserDTO judgeDTO)
+        {
+
+            // primero verificar que no exista un user con ese email
+            //var user = await GetByEmail(playerDTO.Email);
+            //if(user != null)
+            //{
+            //    throw new Exception("El email ya se encuentra registrado");
+            //}
+
+
+            User judge = new User()
+            {
+                Name = judgeDTO.Name,
+                Email = judgeDTO.Email,
+                Username = judgeDTO.Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(judgeDTO.Password),
+                Avatar = judgeDTO.Avatar,
+                Role = UserRole.Judge,
+            };
+
+            if (await _userDAO.Create(judge) > 0)
+            {
+                return judge;
             }
 
             return null;

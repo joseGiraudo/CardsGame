@@ -32,8 +32,8 @@ namespace WebApi.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePlayer(PlayerDTO playerDto)
+        [HttpPost("players")]
+        public async Task<IActionResult> CreatePlayer(UserDTO playerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -44,17 +44,17 @@ namespace WebApi.Controllers
             return Ok(userCreated);
         }
 
-        // metodo para crear jueces y organizadores
-        //[HttpPost]
-        //public async Task<IActionResult> CreateUser(User user)
-        //{
-        //    if (user == null)
-        //    {
-        //        return BadRequest("Los campos son incorrectos");
-        //    }
+        // metodo para crear jueces
+        [HttpPost("judges")]
+        public async Task<IActionResult> CreateUser(UserDTO judgeDTO)
+        {
+            if (judgeDTO == null)
+            {
+                return BadRequest("Los campos son incorrectos");
+            }
 
-        //    var userCreated = await _userService.Create(user);
-        //    return Ok(userCreated);
-        //}
+            var judgeCreated = await _userService.CreateJudge(judgeDTO);
+            return Ok(judgeCreated);
+        }
     }
 }

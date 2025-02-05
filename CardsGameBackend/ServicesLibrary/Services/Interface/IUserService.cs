@@ -13,7 +13,8 @@ namespace ServicesLibrary.Services.Interface
         public Task<List<User>> GetAll();
         public Task<User> GetById(int id);
         public Task<User> GetByEmail(string email);
-        public Task<User> CreatePlayer(PlayerDTO playerDTO);
+        public Task<User> CreatePlayer(UserDTO playerDTO);
+        public Task<User> CreateJudge(UserDTO judgeDTO);
         public Task<User> Update(User user);
         public Task<string> DeleteById(int id);
 
