@@ -13,6 +13,5 @@ namespace ServicesLibrary.Services.Interface
         public string GenerateRefreshToken();
         public Task SaveRefreshToken(int userId, string refreshToken);
         public Task<int?> ValidateRefreshToken(string refreshToken);
-        public Task DeleteRefreshToken(string refreshToken);
     }
 }

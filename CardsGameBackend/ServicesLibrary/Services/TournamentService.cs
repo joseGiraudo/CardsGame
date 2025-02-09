@@ -48,6 +48,23 @@ namespace ServicesLibrary.Services
             return tournament;
         }
 
+        public async Task RegisterPlayer(int tournamentId, int playerId, int deckId)
+        {
+            // primero reviso que haya cupo
+            int maxPlayers = await CalculateMaxPlayersAsync(tournamentId);
+
+            List<TournamentPlayer> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
+            
+            if(playersRegistered.Count() == maxPlayers)
+            {
+                throw new Exception("Cupo del torneo completado. No se admiten mas jugadors");
+            }
+
+            await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
+
+            // conviene devolver un boolean para saber si se registro?
+        }
+
         public async Task AdvanceTournamentPhase(int tournamentId)
         {
             var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
@@ -65,13 +82,13 @@ namespace ServicesLibrary.Services
 
         private async Task StartTournament(Tournament tournament)
         {
-            // Validate player registrations
+            // obtengo los jugadores registrados
             var players = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
 
             if (players.Count < 2)
                 throw new InvalidOperationException("Not enough players to start tournament");
 
-            // Schedule initial round
+            // Creo una ronda de partidos
             await CreateNextRoundGames(tournament, players);
 
             tournament.Phase = TournamentPhase.InProgress;
@@ -139,6 +156,24 @@ namespace ServicesLibrary.Services
             await _tournamentDAO.UpdateAsync(tournament);
         }
 
+        private async Task<int> CalculateMaxPlayersAsync(int tournamentId)
+        {
+            int maxPlayers = 0;
+            
+            // ver como tengo las fechas del torneo
+
+            Tournament tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+
+            int duration = (tournament.EndDate - tournament.StartDate).Days;
+
+
+            // por ahora supongo que se juegan 8 partidos por dia
+
+            maxPlayers = duration * 8;
+
+            return maxPlayers;
+        }
+
         
 
         public Task<string> DeleteById(int id)
@@ -148,7 +183,7 @@ namespace ServicesLibrary.Services
 
         public async Task<List<Tournament>> GetAll()
         {
-            var tournaments = await _tournamentDAO.GetAll();
+            var tournaments = await _tournamentDAO.GetAllAsync();
 
 
             // aca tengo que convertir las fechas que traigo en utc al horario del usuario logueado
@@ -161,7 +196,7 @@ namespace ServicesLibrary.Services
 
         public async Task<Tournament> GetById(int id)
         {
-            var tournament = await _tournamentDAO.GetById(id);
+            var tournament = await _tournamentDAO.GetByIdAsync(id);
             return tournament;
         }
 

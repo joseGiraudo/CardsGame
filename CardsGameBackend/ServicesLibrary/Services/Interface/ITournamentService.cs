@@ -15,5 +15,7 @@ namespace ServicesLibrary.Services.Interface
         public Task<Tournament> Create(CreateTournamentDTO tournamentDTO);
         public Task<Tournament> Update(Tournament tournament);
         public Task<string> DeleteById(int id);
+        public Task RegisterPlayer(int tournamentId, int playerId, int deckId);
+        public Task AdvanceTournamentPhase(int tournamentId);
     }
 }

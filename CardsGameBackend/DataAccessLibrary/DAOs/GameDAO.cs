@@ -32,8 +32,8 @@ namespace DataAccessLibrary.DAOs
                 {
                     tournamentId = game.TournamentId,
                     startDate = game.StartDate,
-                    player1 = game.Player1,
-                    player2 = game.Player2
+                    player1 = game.Player1Id,
+                    player2 = game.Player2Id
                 });
 
                 return gameId;

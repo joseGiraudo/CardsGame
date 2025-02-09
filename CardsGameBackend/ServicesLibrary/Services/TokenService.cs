@@ -64,7 +64,7 @@ namespace ServicesLibrary.Services
 
         public async Task SaveRefreshToken(int userId, string refreshToken)
         {
-            await _tokenDAO.SaveRefreshToken(userId, refreshToken);
+            await _tokenDAO.CreateRefreshToken(userId, refreshToken, DateTime.Now.AddDays(7));
         }
 
 
@@ -76,11 +76,6 @@ namespace ServicesLibrary.Services
                 return null;
             }
             return tokenData.UserId;
-        }
-
-        public async Task DeleteRefreshToken(string refreshToken)
-        {
-            await _tokenDAO.DeleteRefreshToken(refreshToken);
         }
     }
 }

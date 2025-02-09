@@ -35,6 +35,9 @@ builder.Services.AddScoped<ITournamentService, TournamentService>();
 builder.Services.AddScoped<IGameDAO, GameDAO>();
 builder.Services.AddScoped<IGameService, GameService>();
 
+builder.Services.AddScoped<ITournamentPlayerDAO, TournamentPlayerDAO>();
+
+
 
 
 builder.Services.AddCors(options =>

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModelsLibrary.DTOs.Tournament;
 using ServicesLibrary.Services.Interface;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("tournaments")]
     public class TournamentController : ControllerBase
@@ -53,11 +55,19 @@ namespace WebApi.Controllers
         }
 
         // registro de un player a un torneo
-        [HttpPost("{id}/register")]
-        public async Task<IActionResult> TournamentRegistration(int id)
+        [HttpPost("{tournamentId}/register/{deckId}")]
+        public async Task<IActionResult> TournamentRegistration(int tournamentId, int deckId)
         {
-            
-            throw new NotImplementedException();
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            await _tournamentService.RegisterPlayer(tournamentId, userId, deckId);
+
+            return Ok("Registro exitoso");
         }
     }
 }
