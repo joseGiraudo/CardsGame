@@ -31,6 +31,25 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
+        public async Task FinalizeGame(int gameId, int winnerId)
+        {
+            Game game = await GetById(gameId);
+
+            if (game.StartDate.AddMinutes(30) < DateTime.Now)
+            {
+                throw new Exception("El juego no finalizo");
+            }
+
+            if(game.WinnerId != null)
+            {
+                throw new Exception("El juego ya fue oficializado");
+            }
+
+            game.WinnerId = winnerId;
+
+            await _gameDAO.Update(game);
+        }
+
         public async Task<List<Game>> GetAll()
         {
             var games = (List<Game>) await _gameDAO.GetAll();

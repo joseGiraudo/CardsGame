@@ -16,5 +16,6 @@ namespace ServicesLibrary.Services.Interface
         public Task<Game> Create(Game game);
         public Task<Game> Update(Game Game);
         public Task<string> DeleteById(int id);
+        public Task FinalizeGame(int gameId, int winnerId);
     }
 }
