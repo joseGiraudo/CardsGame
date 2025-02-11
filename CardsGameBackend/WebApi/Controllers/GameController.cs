@@ -42,12 +42,5 @@ namespace WebApi.Controllers
         }
 
 
-        // este endpoint es unicamente para jueces
-        [HttpPost("{id}")]
-        public async Task<IActionResult> FinalizeGame(int id)
-        {
-            // aca debo llamar al servicio para finalizar un juego
-            return Ok("No implementado");
-        }
     }
 }

@@ -13,10 +13,12 @@ namespace ServicesLibrary.Services
     public class GameService : IGameService
     {
         private readonly IGameDAO _gameDAO;
+        private readonly ITournamentPlayerDAO _tournamentPlayerDAO;
 
-        public GameService(IGameDAO gameDAO)
+        public GameService(IGameDAO gameDAO, ITournamentPlayerDAO tournamentPlayerDAO)
         {
             _gameDAO = gameDAO;
+            _tournamentPlayerDAO = tournamentPlayerDAO;
         }
 
 
@@ -45,9 +47,27 @@ namespace ServicesLibrary.Services
                 throw new Exception("El juego ya fue oficializado");
             }
 
-            game.WinnerId = winnerId;
+            int losserId = 0;
+
+            if (game.Player1Id == winnerId)
+            {
+                losserId = game.Player2Id;
+                game.WinnerId = winnerId;
+            } else if (game.Player2Id == winnerId) 
+            {
+                losserId = game.Player1Id;
+                game.WinnerId = winnerId;
+            } else
+            {
+                throw new Exception("El id de ganador no se encentra en esta partida");
+            }
 
             await _gameDAO.Update(game);
+
+            await _tournamentPlayerDAO.EliminatePlayer(game.TournamentId, losserId);
+
+            // que puedo devolver aca??????          
+
         }
 
         public async Task<List<Game>> GetAll()

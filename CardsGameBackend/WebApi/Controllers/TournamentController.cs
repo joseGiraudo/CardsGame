@@ -46,14 +46,6 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpGet("{id}/games")]
-        public async Task<IActionResult> GetGamesById(int id)
-        {
-            var games = await _gameService.GetByTournamentId(id);
-
-            return Ok(games);
-        }
-
         // registro de un player a un torneo
         [HttpPost("{tournamentId}/register/{deckId}")]
         public async Task<IActionResult> TournamentRegistration(int tournamentId, int deckId)
@@ -68,6 +60,24 @@ namespace WebApi.Controllers
             await _tournamentService.RegisterPlayer(tournamentId, userId, deckId);
 
             return Ok("Registro exitoso");
+        }
+
+
+        [HttpGet("{tournamentId}/games")]
+        public async Task<IActionResult> GetGamesById(int tournamentId)
+        {
+            var games = await _gameService.GetByTournamentId(tournamentId);
+
+            return Ok(games);
+        }
+
+        // registro de un player a un torneo
+        [HttpPost("{tournamentId}/games")]
+        public async Task<IActionResult> FinalizeGame(int tournamentId, [FromBody] int winnerId)
+        {
+            await _gameService.FinalizeGame(tournamentId, winnerId);
+
+            return Ok("Juego Oficializado correctamente");
         }
     }
 }

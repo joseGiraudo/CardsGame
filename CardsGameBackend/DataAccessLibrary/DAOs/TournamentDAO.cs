@@ -38,7 +38,7 @@ namespace DataAccessLibrary.DAOs
                         startDate = tournament.StartDate,
                         endDate = tournament.EndDate,
                         countryId = tournament.CountryId,
-                        phase = tournament.Phase,
+                        phase = tournament.Phase.ToString(),
                         organizerId = tournament.OrganizerId,
                     });
                 return tournamentId;

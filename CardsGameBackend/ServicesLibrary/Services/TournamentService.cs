@@ -8,6 +8,7 @@ using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Tournament;
 using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
@@ -29,7 +30,7 @@ namespace ServicesLibrary.Services
         {
             if (tournamentDTO.EndDate <= tournamentDTO.StartDate)
             {
-                throw new Exception("la fecha de finalizacion debe ser mayor a la de comienzo");
+                throw new BadRequestException("la fecha de finalizacion debe ser mayor a la de comienzo");
             }
             // ver que otras validaciones hay
 
@@ -50,15 +51,24 @@ namespace ServicesLibrary.Services
 
         public async Task RegisterPlayer(int tournamentId, int playerId, int deckId)
         {
+            // el torneo existe y esta en etapa de registro?
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+            if (tournament == null)
+                throw new NotFoundException("El torneo no existe");
+
+            if (tournament.Phase != TournamentPhase.Registration)
+                throw new RegistrationClosedException("No se permiten mas inscripciones en el torneo");
+
+
             // primero reviso que haya cupo
             int maxPlayers = await CalculateMaxPlayersAsync(tournamentId);
 
             List<TournamentPlayer> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
             
-            if(playersRegistered.Count() == maxPlayers)
-            {
-                throw new Exception("Cupo del torneo completado. No se admiten mas jugadors");
-            }
+            if(playersRegistered.Count() >= maxPlayers)
+                throw new RegistrationClosedException("Cupo del torneo completado. No se admiten mas jugadors");
+
+
 
             await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
 
