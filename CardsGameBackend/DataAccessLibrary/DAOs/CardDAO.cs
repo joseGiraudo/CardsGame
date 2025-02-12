@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DataAccessLibrary.DAOs.Interface;
+using DataAccessLibrary.Exceptions;
 using Microsoft.Extensions.Configuration;
 using ModelsLibrary.Models;
 using MySqlConnector;
@@ -26,16 +27,41 @@ namespace DataAccessLibrary.DAOs
                             "VALUES(@name, @attack, @defense, @illustration); " +
                             "SELECT LAST_INSERT_ID();";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                return await connection.ExecuteScalarAsync<int>(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    name = card.Name,
-                    attack = card.Attack,
-                    defense = card.Defense,
-                    illustration = card.Illustration
-                });
+                    await connection.OpenAsync();
+                    return await connection.ExecuteScalarAsync<int>(query, new
+                    {
+                        name = card.Name,
+                        attack = card.Attack,
+                        defense = card.Defense,
+                        illustration = card.Illustration
+                    });
+                }
+            }
+            catch (MySqlException ex)
+            {
+                // Manejar errores específicos de MySQL
+                switch (ex.Number)
+                {
+                    case 1062: // Duplicate entry
+                        throw new DatabaseException($"Ya existe una carta con el nombre {card.Name}", ex);
+                    case 1452: // Foreign key constraint fails
+                        throw new DatabaseException("Error de referencia en la base de datos", ex);
+                    case 1042: // Unable to connect
+                        throw new DatabaseException("Error de conexión con la base de datos", ex);
+                    case 1043: // Bad handshake
+                        throw new DatabaseException("Error de conexión con la base de datos", ex);
+                    default:
+                        throw new DatabaseException($"Error al crear la carta: {ex.Message}", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Otros errores no específicos de MySQL
+                throw new DatabaseException("Error inesperado al crear la carta", ex);
             }
         }
 

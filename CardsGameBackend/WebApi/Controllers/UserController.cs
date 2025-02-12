@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ModelsLibrary.DTOs.Users;
+using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services;
 using ServicesLibrary.Services.Interface;
 
@@ -17,6 +21,23 @@ namespace WebApi.Controllers
             _userService = userService;
         }
 
+
+        // Obtener datos del token
+        private (int userId, UserRole role) GetCurrentUserData()
+        {
+            // Obtener el UserId de los claims de manera segura
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int userId = int.TryParse(userIdClaim, out int parsedUserId) ? parsedUserId : 0;
+
+            // Obtener el rol de los claims de manera segura
+            var roleStr = User.FindFirst(ClaimTypes.Role)?.Value;
+            var role = Enum.TryParse<UserRole>(roleStr, out var parsedRole) ? parsedRole : UserRole.Player;
+
+            return (userId, role);
+        }
+
+
+
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -32,29 +53,33 @@ namespace WebApi.Controllers
             return Ok(user);
         }
 
-        [HttpPost("players")]
-        public async Task<IActionResult> CreatePlayer(UserDTO playerDto)
+        // dejo eso así junto? o armo otro meteod para registrarse que lo usen unicamente jugadores?
+
+        [HttpPost("")]
+        [Authorize]
+        [AllowAnonymous] // por los players que pueden autoregistrarse
+        public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var userCreated = await _userService.CreatePlayer(playerDto);
-            return Ok(userCreated);
-        }
-
-        // metodo para crear jueces
-        [HttpPost("judges")]
-        public async Task<IActionResult> CreateUser(UserDTO judgeDTO)
-        {
-            if (judgeDTO == null)
+            try
             {
-                return BadRequest("Los campos son incorrectos");
-            }
+                var (creatorId, creatorRole) = GetCurrentUserData();
+                var createdUser = await _userService.CreateUser(userDTO, creatorId, creatorRole);
 
-            var judgeCreated = await _userService.CreateJudge(judgeDTO);
-            return Ok(judgeCreated);
+                return CreatedAtAction("Usuario creado correctamente", createdUser);
+            }
+            catch (UnauthorizedRoleException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (UserException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Users;
 using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
@@ -21,63 +22,32 @@ namespace ServicesLibrary.Services
         }
 
 
-        public async Task<User> CreatePlayer(UserDTO playerDTO)
+        public async Task<User> CreateUser(UserDTO userDTO, int? creatorId, UserRole? creatorRole)
         {
 
-            // primero verificar que no exista un user con ese email
-            //var user = await GetByEmail(playerDTO.Email);
-            //if(user != null)
-            //{
-            //    throw new Exception("El email ya se encuentra registrado");
-            //}
+            await ValidateUserCreation(userDTO, creatorId, creatorRole);
 
-
-            User player = new User()
+            User user = new User()
             {
-                Name = playerDTO.Name,
-                Email = playerDTO.Email,
-                Username = playerDTO.Username,
-                Password = BCrypt.Net.BCrypt.HashPassword(playerDTO.Password),
-                Avatar = playerDTO.Avatar,
-                Role = UserRole.Player,
-            };
-            
-            if(await _userDAO.Create(player) > 0)
-            {
-                return player;
-            }
-
-            return null;
-        }
-
-        public async Task<User> CreateJudge(UserDTO judgeDTO)
-        {
-
-            // primero verificar que no exista un user con ese email
-            //var user = await GetByEmail(playerDTO.Email);
-            //if(user != null)
-            //{
-            //    throw new Exception("El email ya se encuentra registrado");
-            //}
-
-
-            User judge = new User()
-            {
-                Name = judgeDTO.Name,
-                Email = judgeDTO.Email,
-                Username = judgeDTO.Username,
-                Password = BCrypt.Net.BCrypt.HashPassword(judgeDTO.Password),
-                Avatar = judgeDTO.Avatar,
-                Role = UserRole.Judge,
+                Name = userDTO.Name,
+                Email = userDTO.Email,
+                Username = userDTO.Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(userDTO.Password),
+                Avatar = userDTO.Avatar,
+                Role = userDTO.Role,
+                CountryId = userDTO.CountryId,
+                CreatedBy = creatorId
             };
 
-            if (await _userDAO.Create(judge) > 0)
-            {
-                return judge;
-            }
+            int userId = await _userDAO.Create(user);
 
-            return null;
+            user.Id = userId;
+            user.Password = null;
+
+            return user;
         }
+        
+        
 
         public Task<string> DeleteById(int id)
         {
@@ -129,6 +99,58 @@ namespace ServicesLibrary.Services
         public Task<User> Update(User user)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task ValidateUserCreation(UserDTO userDTO, int? creatorId, UserRole? creatorRole)
+        {
+            // primero valido que tenga el rol necesario para crearlo
+
+            if(creatorId.HasValue && creatorId > 0)
+            {
+                // hay un creador, entonces 
+                switch (creatorRole)
+                {
+                    case UserRole.Admin:
+                        // Puede crear cualquier rol
+                        break;
+
+                    case UserRole.Organizer:
+                        if (userDTO.Role != UserRole.Judge)
+                        {
+                            throw new UnauthorizedRoleException("Los organizadores solo pueden crear jueces");
+                        }
+                        break;
+
+                    default:
+                        throw new UnauthorizedRoleException("No tienes permisos para crear usuarios");
+                }
+            } else
+            {
+                // si no hay un creador, es un jugador que se quiere registrar solo
+                if (userDTO.Role != UserRole.Player)
+                {
+                    throw new UnauthorizedRoleException("No puedes crear un usuario con ese rol");
+                }
+            }
+
+
+
+            // verificar que no exista un user con ese email
+
+            var user = await GetByEmail(userDTO.Email);
+
+            if (user != null)
+                throw new DuplicateEmailException("El email ya se encuentra registrado");
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+                throw new UserException("El email es requerido");
+
+            if (string.IsNullOrWhiteSpace(user.Password))
+                throw new UserException("La contraseña es requerida");
+
+            if (string.IsNullOrWhiteSpace(user.Username))
+                throw new UserException("El nombre de usuario es requerido");
+
         }
     }
 }

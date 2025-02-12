@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DataAccessLibrary.DAOs.Interface;
+using DataAccessLibrary.Exceptions;
 using Microsoft.Extensions.Configuration;
 using ModelsLibrary.Models;
 using MySqlConnector;
@@ -27,24 +28,45 @@ namespace DataAccessLibrary.DAOs
         public async Task<int> Create(User user)
         {
             string query = @"INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy) " +
-                            "VALUES(@name, @username, @email, @password, @countryId, @avatar, @role, @createdBy); " +
+                            "VALUES(@Name, @Username, @Email, @Password, @CountryId, @Avatar, @Role, @CreatedBy, @CreatedAt); " +
                             "SELECT LAST_INSERT_ID();";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                return await connection.ExecuteScalarAsync<int>(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    name = user.Name,
-                    username = user.Username,
-                    email = user.Email,
-                    password = user.Password,
-                    countryId = user.CountryId,
-                    avatar = user.Avatar,
-                    role = user.Role,
-                    createdBy = user.CreatedBy
-                });
+                    connection.Open();
+                    return await connection.ExecuteScalarAsync<int>(query, new
+                    {
+                        user.Name,
+                        user.Username,
+                        user.Email,
+                        user.Password,
+                        user.CountryId,
+                        user.Avatar,
+                        user.Role,
+                        user.CreatedBy,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
             }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
+                    case 1062: // Duplicate entry
+                        throw new DatabaseException($"Duplicate entry for email: {user.Email}", ex);
+                    case 1452: // Foreign key violation
+                        throw new DatabaseException($"Invalid reference: CountryId {user.CountryId} or CreatedBy {user.CreatedBy}", ex);
+                    default:
+                        throw new DatabaseException($"Database error creating user: {ex.Message}", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Unexpected error creating user", ex);
+            }
+
         }
 
         public Task<int> Delete(int id)

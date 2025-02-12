@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ModelsLibrary.Enums;
 
 namespace ModelsLibrary.DTOs.Users
 {
@@ -25,6 +26,9 @@ namespace ModelsLibrary.DTOs.Users
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres.")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Debes seleccionar un rol")]
+        public UserRole Role { get; set; }
 
 
         public int? CountryId { get; set; }

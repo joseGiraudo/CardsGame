@@ -8,9 +8,9 @@ namespace ModelsLibrary.Enums
 {
     public enum UserRole
     {
-        Admin,
-        Organizer,
-        Judge,
-        Player
+        Admin = 1,
+        Organizer = 2,
+        Judge = 3,
+        Player = 4
     }
 }
