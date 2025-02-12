@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Tournament;
 using ModelsLibrary.Models;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
@@ -39,12 +40,12 @@ namespace ServicesLibrary.Services
 
             if (game.StartDate.AddMinutes(30) < DateTime.Now)
             {
-                throw new Exception("El juego no finalizo");
+                throw new BadRequestException("El juego no finalizo");
             }
 
             if(game.WinnerId != null)
             {
-                throw new Exception("El juego ya fue oficializado");
+                throw new InconsistentException("El juego ya fue oficializado");
             }
 
             int losserId = 0;
@@ -59,7 +60,7 @@ namespace ServicesLibrary.Services
                 game.WinnerId = winnerId;
             } else
             {
-                throw new Exception("El id de ganador no se encentra en esta partida");
+                throw new InconsistentException("El id de ganador no se encentra en esta partida");
             }
 
             await _gameDAO.Update(game);

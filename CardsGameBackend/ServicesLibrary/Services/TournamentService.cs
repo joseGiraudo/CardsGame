@@ -28,10 +28,12 @@ namespace ServicesLibrary.Services
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
         {
+            if(tournamentDTO.StartDate < DateTime.UtcNow) 
+                throw new BadRequestException("La fecha de inicio debe ser mayor a la fecha actual");
+
             if (tournamentDTO.EndDate <= tournamentDTO.StartDate)
-            {
                 throw new BadRequestException("la fecha de finalizacion debe ser mayor a la de comienzo");
-            }
+
             // ver que otras validaciones hay
 
             Tournament tournament = new Tournament
@@ -96,7 +98,7 @@ namespace ServicesLibrary.Services
             var players = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
 
             if (players.Count < 2)
-                throw new InvalidOperationException("Not enough players to start tournament");
+                throw new InvalidOperationException("No hay suficientes jugadores para comenzar el torneo");
 
             // Creo una ronda de partidos
             await CreateNextRoundGames(tournament, players);

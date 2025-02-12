@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Auth;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Response;
 using ServicesLibrary.Services.Interface;
 
@@ -29,14 +30,14 @@ namespace ServicesLibrary.Services
 
             if (user == null)
             {
-                return null; // usuario invalido
+                throw new NotFoundException("Email o Password incorrectos");
             }
 
             // ver que pasa cuando la password no se guardo hasheada en la BD
 
             if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
             {
-                return null; // contraseña invalida
+                throw new NotFoundException("Email o Password incorrectos");
             }
 
             var token = _tokenService.GenerateToken(user);

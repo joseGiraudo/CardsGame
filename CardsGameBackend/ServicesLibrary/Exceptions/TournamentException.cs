@@ -28,6 +28,11 @@ namespace ServicesLibrary.Exceptions
         public BadRequestException(string message) : base(message, 400) { }
     }
 
+    public class InconsistentException : TournamentException
+    {
+        public InconsistentException(string message) : base(message, 409) { }
+    }
+
     public class UnauthorizedException : TournamentException
     {
         public UnauthorizedException(string message)
