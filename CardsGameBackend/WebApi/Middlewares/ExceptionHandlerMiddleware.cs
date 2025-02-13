@@ -25,11 +25,44 @@ namespace WebApi.Middlewares
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
+                context.Response.StatusCode = ex.StatusCode;
 
                 var result = JsonSerializer.Serialize(new
                 {
                     message = ex.Message,
                     statusCode = ex.StatusCode
+                });
+
+
+                await response.WriteAsync(result);
+
+            }
+            catch (UserException ex)
+            {
+                var response = context.Response;
+                response.ContentType = "application/json";
+                context.Response.StatusCode = ex.StatusCode;
+
+                var result = JsonSerializer.Serialize(new
+                {
+                    message = ex.Message,
+                    statusCode = ex.StatusCode
+                });
+
+
+                await response.WriteAsync(result);
+
+            }
+            catch (Exception ex)
+            {
+                var response = context.Response;
+                response.ContentType = "application/json";
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+                var result = JsonSerializer.Serialize(new
+                {
+                    message = ex.Message,
+                    statusCode = StatusCodes.Status500InternalServerError
                 });
 
 
