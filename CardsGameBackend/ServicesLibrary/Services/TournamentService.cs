@@ -109,12 +109,12 @@ namespace ServicesLibrary.Services
 
         private async Task ScheduleNextRound(Tournament tournament)
         {
-            // Get winners from previous round
+            // Obtengo los jugadores que no estan eliminados del torneo
             var winners = await _tournamentPlayerDAO.GetRoundWinnersAsync(tournament.Id);
 
             if (winners.Count() <= 1)
             {
-                // Final round or tournament complete
+                // Queda un solo jugador, se finaliza el torneo
                 await FinalizeTournament(tournament, winners.FirstOrDefault().PlayerId);
                 return;
             }
@@ -137,7 +137,8 @@ namespace ServicesLibrary.Services
                     TournamentId = tournament.Id,
                     Player1Id = lastPlayer.PlayerId,
                     Player2Id = lastPlayer.PlayerId, // ver si admito valores null para el player 2 o como manejarlo
-                    WinnerId = lastPlayer.PlayerId
+                    WinnerId = lastPlayer.PlayerId // dejarlo null y que el juez a mano lo de como ganador
+                    // falta el start date
                 };
                 // lo guardo en la BD
                 await _gameDAO.Create(game);
@@ -159,6 +160,9 @@ namespace ServicesLibrary.Services
                 await _gameDAO.Create(game);
                 games.Add(game);
             }
+
+            // revisar por las dudas
+
         }
 
         private async Task FinalizeTournament(Tournament tournament, int winnerId)
@@ -181,11 +185,18 @@ namespace ServicesLibrary.Services
 
             // por ahora supongo que se juegan 8 partidos por dia
 
-            maxPlayers = duration * 8;
+            int maxGames = duration * 8;
+
+            maxPlayers = maxGames - 1;
 
             return maxPlayers;
         }
 
+
+        private async Task CheckDeck(int deckId)
+        {
+            // este metodo debe obtener las cartas del deck y chequear que esten en la serie de cartas permitida
+        }
         
 
         public Task<string> DeleteById(int id)
