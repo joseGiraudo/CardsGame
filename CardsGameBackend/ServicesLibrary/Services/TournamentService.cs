@@ -36,19 +36,27 @@ namespace ServicesLibrary.Services
 
             // ver que otras validaciones hay
 
+
+            var startTimeUtc = ConvertToUtcTimeOnly(tournamentDTO.StartTime);
+            var endTimeUtc = ConvertToUtcTimeOnly(tournamentDTO.EndTime);
+
             Tournament tournament = new Tournament
             {
                 Name = tournamentDTO.Name,
                 StartDate = tournamentDTO.StartDate,
                 EndDate = tournamentDTO.EndDate,
-                StartTime = tournamentDTO.StartTime,
-                EndTime = tournamentDTO.EndTime,
+                StartTime = startTimeUtc,
+                EndTime = endTimeUtc,
                 CountryId = tournamentDTO.CountryId,
                 OrganizerId = tournamentDTO.OrganizerId,
                 Phase = TournamentPhase.Registration
             };
 
             tournament.Id = await _tournamentDAO.CreateAsync(tournament);
+
+            TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+            tournament.StartTime = tournament.StartTime - systemUtcOffset;
+            tournament.EndTime = tournament.EndTime - systemUtcOffset;
 
             return tournament;
         }
@@ -229,5 +237,21 @@ namespace ServicesLibrary.Services
         {
             throw new NotImplementedException();
         }
+
+
+
+        // metodo para convertir los horarios del torneo en UTC
+        private TimeSpan ConvertToUtcTimeOnly(TimeOnly time)
+        {
+            // Combina el TimeOnly con una fecha arbitraria (ej. 01/01/2000)
+            DateTime localDateTime = DateTime.Today.Add(time.ToTimeSpan());
+
+            // Convierte la hora local a UTC
+            DateTime utcDateTime = localDateTime.ToUniversalTime();
+
+            // Devuelve solo la hora en UTC como TimeSpan
+            return utcDateTime.TimeOfDay;
+        }
+
     }
 }

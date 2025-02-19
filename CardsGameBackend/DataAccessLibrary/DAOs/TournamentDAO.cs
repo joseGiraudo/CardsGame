@@ -32,14 +32,16 @@ namespace DataAccessLibrary.DAOs
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
+
+
                 var tournamentId = await connection.ExecuteScalarAsync<int>(query,
                     new
                     {
                         name = tournament.Name,
                         startDate = tournament.StartDate,
                         endDate = tournament.EndDate,
-                        startTime = tournament.StartTime.ToTimeSpan(),
-                        endTime = tournament.EndTime.ToTimeSpan(),
+                        startTime = tournament.StartTime,
+                        endTime = tournament.EndTime,
                         countryId = tournament.CountryId,
                         phase = tournament.Phase.ToString(),
                         organizerId = tournament.OrganizerId,
@@ -64,6 +66,13 @@ namespace DataAccessLibrary.DAOs
                 if (tournaments == null || tournaments.Count() < 1)
                 {
                     throw new Exception("No se encontraron torneos");
+                }
+                TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+                foreach (var tournament in tournaments)
+                {
+                    // Convertir la hora de la BD a UTC sumando la diferencia horaria del sistema
+                    tournament.StartTime = tournament.StartTime - systemUtcOffset;
+                    tournament.EndTime = tournament.EndTime - systemUtcOffset;
                 }
 
                 return tournaments;
@@ -117,6 +126,21 @@ namespace DataAccessLibrary.DAOs
 
                 return tournaments;
             }
+        }
+
+
+
+        // metodo para convertir los horarios del torneo en UTC
+        private TimeSpan ConvertToUtcTimeOnly(TimeOnly time)
+        {
+            // Combina el TimeOnly con una fecha arbitraria (ej. 01/01/2000)
+            DateTime localDateTime = DateTime.Today.Add(time.ToTimeSpan());
+
+            // Convierte la hora local a UTC
+            DateTime utcDateTime = localDateTime.ToUniversalTime();
+
+            // Devuelve solo la hora en UTC como TimeSpan
+            return utcDateTime.TimeOfDay;
         }
     }
 }
