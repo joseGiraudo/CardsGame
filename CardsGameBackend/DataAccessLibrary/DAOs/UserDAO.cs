@@ -27,7 +27,7 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<int> Create(User user)
         {
-            string query = @"INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy) " +
+            string query = @"INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy, createdAt) " +
                             "VALUES(@Name, @Username, @Email, @Password, @CountryId, @Avatar, @Role, @CreatedBy, @CreatedAt); " +
                             "SELECT LAST_INSERT_ID();";
 
@@ -44,7 +44,7 @@ namespace DataAccessLibrary.DAOs
                         user.Password,
                         user.CountryId,
                         user.Avatar,
-                        user.Role,
+                        Role = user.Role.ToString(),
                         user.CreatedBy,
                         CreatedAt = DateTime.UtcNow
                     });
@@ -99,12 +99,14 @@ namespace DataAccessLibrary.DAOs
             {
                 connection.Open();
                 var user = await connection.QueryFirstOrDefaultAsync<User>(query, new { email = email });
-                if (user == null)
-                {
-                    throw new Exception("Usuario no encontrado");
-                }
 
                 return user;
+                //if (user == null)
+                //{
+                //    throw new Exception("Usuario no encontrado");
+                //}
+
+                //return user;
             }
         }
 

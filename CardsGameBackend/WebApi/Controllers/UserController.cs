@@ -81,5 +81,31 @@ namespace WebApi.Controllers
                 return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
         }
+
+        [HttpPost("/register")]
+        [AllowAnonymous] // por los players que pueden autoregistrarse
+        public async Task<IActionResult> RegisterPlayer(UserDTO userDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var (creatorId, creatorRole) = GetCurrentUserData();
+                var createdUser = await _userService.CreateUser(userDTO, creatorId, creatorRole);
+
+                return CreatedAtAction("Usuario creado correctamente", createdUser);
+            }
+            catch (UnauthorizedRoleException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (UserException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
+        }
     }
 }

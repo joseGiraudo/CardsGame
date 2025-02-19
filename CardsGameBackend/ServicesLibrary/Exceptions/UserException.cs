@@ -19,8 +19,8 @@ namespace ServicesLibrary.Exceptions
 
     public class DuplicateEmailException : UserException
     {
-        public DuplicateEmailException(string email)
-            : base($"El email {email} ya está registrado", 400) { }
+        public DuplicateEmailException(string message)
+            : base(message, 400) { }
     }
 
     public class UnauthorizedRoleException : UserException

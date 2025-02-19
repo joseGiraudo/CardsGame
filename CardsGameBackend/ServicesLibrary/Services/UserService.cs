@@ -36,7 +36,7 @@ namespace ServicesLibrary.Services
                 Avatar = userDTO.Avatar,
                 Role = userDTO.Role,
                 CountryId = userDTO.CountryId,
-                CreatedBy = creatorId
+                CreatedBy = creatorId > 0 ? creatorId : null,
             };
 
             int userId = await _userDAO.Create(user);
@@ -142,13 +142,13 @@ namespace ServicesLibrary.Services
             if (user != null)
                 throw new DuplicateEmailException("El email ya se encuentra registrado");
 
-            if (string.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(userDTO.Email))
                 throw new UserException("El email es requerido");
 
-            if (string.IsNullOrWhiteSpace(user.Password))
+            if (string.IsNullOrWhiteSpace(userDTO.Password))
                 throw new UserException("La contraseña es requerida");
 
-            if (string.IsNullOrWhiteSpace(user.Username))
+            if (string.IsNullOrWhiteSpace(userDTO.Username))
                 throw new UserException("El nombre de usuario es requerido");
 
         }

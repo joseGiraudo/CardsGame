@@ -24,8 +24,9 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<int> CreateAsync(Tournament tournament)
         {
-            string query = @"INSERT INTO tournaments(name, startDate, endDate, countryId, phase, organizerId) " +
-                "VALUES(@name, @startDate, @endDate, @countryId, @phase, @organizerId); " +
+            string query = @"INSERT INTO tournaments
+                    (name, startDate, endDate, startTime, endTime, countryId, phase, organizerId) " +
+                "VALUES(@name, @startDate, @endDate, @startTime, @endTime, @countryId, @phase, @organizerId); " +
                 "SELECT LAST_INSERT_ID();";
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -37,6 +38,8 @@ namespace DataAccessLibrary.DAOs
                         name = tournament.Name,
                         startDate = tournament.StartDate,
                         endDate = tournament.EndDate,
+                        startTime = tournament.StartTime.ToTimeSpan(),
+                        endTime = tournament.EndTime.ToTimeSpan(),
                         countryId = tournament.CountryId,
                         phase = tournament.Phase.ToString(),
                         organizerId = tournament.OrganizerId,

@@ -41,6 +41,8 @@ namespace ServicesLibrary.Services
                 Name = tournamentDTO.Name,
                 StartDate = tournamentDTO.StartDate,
                 EndDate = tournamentDTO.EndDate,
+                StartTime = tournamentDTO.StartTime,
+                EndTime = tournamentDTO.EndTime,
                 CountryId = tournamentDTO.CountryId,
                 OrganizerId = tournamentDTO.OrganizerId,
                 Phase = TournamentPhase.Registration
@@ -176,16 +178,16 @@ namespace ServicesLibrary.Services
         {
             int maxPlayers = 0;
             
-            // ver como tengo las fechas del torneo
-
+            // Duracion en días del torneo
             Tournament tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
 
             int duration = (tournament.EndDate - tournament.StartDate).Days;
 
 
             // por ahora supongo que se juegan 8 partidos por dia
+            int gamesPerDay = 8;
 
-            int maxGames = duration * 8;
+            int maxGames = duration * gamesPerDay;
 
             maxPlayers = maxGames - 1;
 

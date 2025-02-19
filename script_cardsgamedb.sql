@@ -31,6 +31,8 @@ INSERT INTO users (name, username, email, password, countryId, avatar, role, cre
  VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
 
  SELECT * FROM users;
+ SELECT * FROM countries;
+ SELECT * FROM tournaments;
  
  
 -- Tabla de cartas
@@ -70,7 +72,7 @@ CREATE TABLE collections (
 -- Mazos de cartas de un jugador
 CREATE TABLE decks (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    playerId INT NOT NULL
+    playerId INT NOT NULL,
     name VARCHAR(50),
     FOREIGN KEY (playerId) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -90,6 +92,8 @@ CREATE TABLE tournaments (
     name VARCHAR(100) NOT NULL,
     startDate DATETIME NOT NULL,
     endDate DATETIME NOT NULL,
+    startTime TIME NOT NULL,
+    endTime TIME NOT NULL,
     countryId INT,
     phase ENUM('Registration', 'InProgress', 'Finished') DEFAULT 'Registration',
     organizerId INT NOT NULL,
