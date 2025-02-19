@@ -9,12 +9,14 @@ namespace ModelsLibrary.DTOs.Tournament
     public class CreateTournamentDTO
     {
         public string Name { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        public DateTime LocalStartDate { get; set; }
+        public DateTime LocalEndDate { get; set; }
+        public TimeSpan LocalStartTime { get; set; }
+        public TimeSpan LocalEndTime { get; set; }
         public int OrganizerId { get; set; }
         public int CountryId { get; set; }
+
+        public string TimeZoneId { get; set; }
 
         // falta agregar la lista de jueces y series habilitadas
     }

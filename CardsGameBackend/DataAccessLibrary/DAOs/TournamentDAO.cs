@@ -71,8 +71,8 @@ namespace DataAccessLibrary.DAOs
                 foreach (var tournament in tournaments)
                 {
                     // Convertir la hora de la BD a UTC sumando la diferencia horaria del sistema
-                    tournament.StartTime = tournament.StartTime - systemUtcOffset;
-                    tournament.EndTime = tournament.EndTime - systemUtcOffset;
+                    tournament.StartTime = tournament.StartTime + systemUtcOffset;
+                    tournament.EndTime = tournament.EndTime + systemUtcOffset;
                 }
 
                 return tournaments;
@@ -91,6 +91,11 @@ namespace DataAccessLibrary.DAOs
                 {
                     throw new Exception("No se encontro el torneo");
                 }
+
+                TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+
+                tournament.StartTime = tournament.StartTime + systemUtcOffset;
+                tournament.EndTime = tournament.EndTime + systemUtcOffset;
 
                 return tournament;
             }

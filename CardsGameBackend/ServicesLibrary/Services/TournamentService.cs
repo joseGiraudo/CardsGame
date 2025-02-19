@@ -28,37 +28,59 @@ namespace ServicesLibrary.Services
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
         {
-            if(tournamentDTO.StartDate < DateTime.UtcNow) 
-                throw new BadRequestException("La fecha de inicio debe ser mayor a la fecha actual");
+            //if(tournamentDTO.LocalStartDate < DateTime.UtcNow) 
+            //    throw new BadRequestException("La fecha de inicio debe ser mayor a la fecha actual");
 
-            if (tournamentDTO.EndDate <= tournamentDTO.StartDate)
+            if (tournamentDTO.LocalEndDate <= tournamentDTO.LocalStartDate)
                 throw new BadRequestException("la fecha de finalizacion debe ser mayor a la de comienzo");
 
             // ver que otras validaciones hay
 
-
-            var startTimeUtc = ConvertToUtcTimeOnly(tournamentDTO.StartTime);
-            var endTimeUtc = ConvertToUtcTimeOnly(tournamentDTO.EndTime);
-
-            Tournament tournament = new Tournament
+            try
             {
-                Name = tournamentDTO.Name,
-                StartDate = tournamentDTO.StartDate,
-                EndDate = tournamentDTO.EndDate,
-                StartTime = startTimeUtc,
-                EndTime = endTimeUtc,
-                CountryId = tournamentDTO.CountryId,
-                OrganizerId = tournamentDTO.OrganizerId,
-                Phase = TournamentPhase.Registration
-            };
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(tournamentDTO.TimeZoneId);
+            
 
-            tournament.Id = await _tournamentDAO.CreateAsync(tournament);
+                // Convertir fechas de local a UTC
+                // Usamos DateTime.UtcNow solo para obtener una fecha base para la conversión
+                var baseDate = DateTime.UtcNow.Date;
 
-            TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
-            tournament.StartTime = tournament.StartTime - systemUtcOffset;
-            tournament.EndTime = tournament.EndTime - systemUtcOffset;
+                // Convertir horarios de local a UTC
+                var localStartDateTime = baseDate.Add(tournamentDTO.LocalStartTime);
+                var localEndDateTime = baseDate.Add(tournamentDTO.LocalEndTime);
 
-            return tournament;
+                var startTimeUtc = TimeZoneInfo.ConvertTime(localStartDateTime, timeZone, TimeZoneInfo.Utc).TimeOfDay;
+                var endTimeUtc = TimeZoneInfo.ConvertTime(localEndDateTime, timeZone, TimeZoneInfo.Utc).TimeOfDay;
+
+                // Para las fechas, convertimos cada fecha local a UTC manteniendo la fecha
+                var startDateUtc = TimeZoneInfo.ConvertTime(tournamentDTO.LocalStartDate, timeZone, TimeZoneInfo.Utc).Date;
+                var endDateUtc = TimeZoneInfo.ConvertTime(tournamentDTO.LocalEndDate, timeZone, TimeZoneInfo.Utc).Date;
+
+                Tournament tournament = new Tournament
+                {
+                    Name = tournamentDTO.Name,
+                    StartDate = startDateUtc,
+                    EndDate = endDateUtc,
+                    StartTime = startTimeUtc,
+                    EndTime = endTimeUtc,
+                    CountryId = tournamentDTO.CountryId,
+                    OrganizerId = tournamentDTO.OrganizerId,
+                    Phase = TournamentPhase.Registration
+                };
+
+                tournament.Id = await _tournamentDAO.CreateAsync(tournament);
+
+                //TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+                //tournament.StartTime = tournament.StartTime + systemUtcOffset;
+                //tournament.EndTime = tournament.EndTime + systemUtcOffset;
+
+                return tournament;
+
+            }
+            catch (TimeZoneNotFoundException ex)
+            {
+                throw new BadRequestException("Zona horaria no definida");
+            }
         }
 
         public async Task RegisterPlayer(int tournamentId, int playerId, int deckId)
@@ -241,10 +263,10 @@ namespace ServicesLibrary.Services
 
 
         // metodo para convertir los horarios del torneo en UTC
-        private TimeSpan ConvertToUtcTimeOnly(TimeOnly time)
+        private TimeSpan ConvertToUtc(TimeSpan time)
         {
             // Combina el TimeOnly con una fecha arbitraria (ej. 01/01/2000)
-            DateTime localDateTime = DateTime.Today.Add(time.ToTimeSpan());
+            DateTime localDateTime = DateTime.Today.Add(time);
 
             // Convierte la hora local a UTC
             DateTime utcDateTime = localDateTime.ToUniversalTime();
