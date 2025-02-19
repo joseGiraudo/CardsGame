@@ -38,31 +38,22 @@ namespace ServicesLibrary.Services
 
             try
             {
-                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(tournamentDTO.TimeZoneId);
-            
+                // Asegurar que las fechas sean tratadas como locales
+                DateTime localStartDate = DateTime.SpecifyKind(tournamentDTO.LocalStartDate, DateTimeKind.Unspecified);
+                DateTime localEndDate = DateTime.SpecifyKind(tournamentDTO.LocalEndDate, DateTimeKind.Unspecified);
 
-                // Convertir fechas de local a UTC
-                // Usamos DateTime.UtcNow solo para obtener una fecha base para la conversión
-                var baseDate = DateTime.UtcNow.Date;
+                // Obtener la zona horaria
+                TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(tournamentDTO.TimeZoneId);
 
-                // Convertir horarios de local a UTC
-                var localStartDateTime = baseDate.Add(tournamentDTO.LocalStartTime);
-                var localEndDateTime = baseDate.Add(tournamentDTO.LocalEndTime);
-
-                var startTimeUtc = TimeZoneInfo.ConvertTime(localStartDateTime, timeZone, TimeZoneInfo.Utc).TimeOfDay;
-                var endTimeUtc = TimeZoneInfo.ConvertTime(localEndDateTime, timeZone, TimeZoneInfo.Utc).TimeOfDay;
-
-                // Para las fechas, convertimos cada fecha local a UTC manteniendo la fecha
-                var startDateUtc = TimeZoneInfo.ConvertTime(tournamentDTO.LocalStartDate, timeZone, TimeZoneInfo.Utc).Date;
-                var endDateUtc = TimeZoneInfo.ConvertTime(tournamentDTO.LocalEndDate, timeZone, TimeZoneInfo.Utc).Date;
+                // Convertir a UTC
+                DateTime startDateUtc = TimeZoneInfo.ConvertTimeToUtc(localStartDate, timeZone);
+                DateTime endDateUtc = TimeZoneInfo.ConvertTimeToUtc(localEndDate, timeZone);
 
                 Tournament tournament = new Tournament
                 {
                     Name = tournamentDTO.Name,
                     StartDate = startDateUtc,
                     EndDate = endDateUtc,
-                    StartTime = startTimeUtc,
-                    EndTime = endTimeUtc,
                     CountryId = tournamentDTO.CountryId,
                     OrganizerId = tournamentDTO.OrganizerId,
                     Phase = TournamentPhase.Registration

@@ -25,8 +25,8 @@ namespace DataAccessLibrary.DAOs
         public async Task<int> CreateAsync(Tournament tournament)
         {
             string query = @"INSERT INTO tournaments
-                    (name, startDate, endDate, startTime, endTime, countryId, phase, organizerId) " +
-                "VALUES(@name, @startDate, @endDate, @startTime, @endTime, @countryId, @phase, @organizerId); " +
+                    (name, startDate, endDate, countryId, phase, organizerId) " +
+                "VALUES(@name, @startDate, @endDate, @countryId, @phase, @organizerId); " +
                 "SELECT LAST_INSERT_ID();";
 
             using (var connection = new MySqlConnection(_connectionString))
@@ -40,8 +40,6 @@ namespace DataAccessLibrary.DAOs
                         name = tournament.Name,
                         startDate = tournament.StartDate,
                         endDate = tournament.EndDate,
-                        startTime = tournament.StartTime,
-                        endTime = tournament.EndTime,
                         countryId = tournament.CountryId,
                         phase = tournament.Phase.ToString(),
                         organizerId = tournament.OrganizerId,
@@ -70,9 +68,6 @@ namespace DataAccessLibrary.DAOs
                 TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
                 foreach (var tournament in tournaments)
                 {
-                    // Convertir la hora de la BD a UTC sumando la diferencia horaria del sistema
-                    tournament.StartTime = tournament.StartTime + systemUtcOffset;
-                    tournament.EndTime = tournament.EndTime + systemUtcOffset;
                 }
 
                 return tournaments;
@@ -91,12 +86,6 @@ namespace DataAccessLibrary.DAOs
                 {
                     throw new Exception("No se encontro el torneo");
                 }
-
-                TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
-
-                tournament.StartTime = tournament.StartTime + systemUtcOffset;
-                tournament.EndTime = tournament.EndTime + systemUtcOffset;
-
                 return tournament;
             }
         }

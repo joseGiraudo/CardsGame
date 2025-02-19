@@ -11,8 +11,6 @@ namespace ModelsLibrary.DTOs.Tournament
         public string Name { get; set; }
         public DateTime LocalStartDate { get; set; }
         public DateTime LocalEndDate { get; set; }
-        public TimeSpan LocalStartTime { get; set; }
-        public TimeSpan LocalEndTime { get; set; }
         public int OrganizerId { get; set; }
         public int CountryId { get; set; }
 
