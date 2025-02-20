@@ -123,5 +123,59 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
+
+        public async Task<bool> AssignCardToSeries(int cardId, int seriesId)
+        {
+            string query = @"INSERT INTO cards_series (cardId, seriesId) VALUES (@CardId, @SeriesId);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { CardId = cardId, SeriesId = seriesId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                // Verifica si el error es por duplicado (MySQL Error Code 1062)
+                if (ex.Number == 1062)
+                {
+                    throw new DatabaseException("La carta ya se encuentra en el mazo.", ex);
+                }
+                else
+                {
+                    throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> RemoveCardFromSeries(int cardId, int seriesId)
+        {
+            string query = @"DELETE FROM cards_series WHERE cardId = @CardId AND seriesId = @SeriesId;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { CardId = cardId, SeriesId = seriesId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
     }
 }
