@@ -14,5 +14,6 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<bool> RemoveCardFromDeck(int cardId, int deckId);
         public Task<bool> AssignCardToSeries(int cardId, int seriesId);
         public Task<bool> RemoveCardFromSeries(int cardId, int seriesId);
+        public Task<bool> CreateCardSeries(string name);
     }
 }

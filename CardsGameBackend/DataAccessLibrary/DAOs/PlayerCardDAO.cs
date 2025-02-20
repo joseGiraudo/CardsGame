@@ -39,7 +39,15 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+                // Verifica si el error es por duplicado (MySQL Error Code 1062)
+                if (ex.Number == 1062)
+                {
+                    throw new DatabaseException("La carta ya se encuentra en la coleccion.", ex);
+                }
+                else
+                {
+                    throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+                }
             }
             catch (Exception ex)
             {
@@ -142,7 +150,7 @@ namespace DataAccessLibrary.DAOs
                 // Verifica si el error es por duplicado (MySQL Error Code 1062)
                 if (ex.Number == 1062)
                 {
-                    throw new DatabaseException("La carta ya se encuentra en el mazo.", ex);
+                    throw new DatabaseException("La carta ya se encuentra en la serie.", ex);
                 }
                 else
                 {
@@ -165,6 +173,30 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     int rowsAffected = await connection.ExecuteAsync(query, new { CardId = cardId, SeriesId = seriesId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> CreateCardSeries(string name)
+        {
+            string query = @"INSERT INTO collections (name, releaseDate) " +
+                " VALUES (@Name, @ReleaseDate);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { Name = name, ReleaseDate = DateTime.UtcNow });
                     return rowsAffected > 0;
                 }
             }
