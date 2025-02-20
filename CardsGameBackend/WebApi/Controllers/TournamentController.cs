@@ -79,5 +79,20 @@ namespace WebApi.Controllers
 
             return Ok("Juego Oficializado correctamente");
         }
+
+
+        [HttpGet("max-players/{tournamentId}")]
+        public async Task<IActionResult> GetMaxPlayers(int tournamentId)
+        {
+            try
+            {
+                var maxPlayers = await _tournamentService.CalculateMaxPlayersAsync(tournamentId);
+                return Ok(maxPlayers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
     }
 }
