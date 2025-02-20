@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Auth;
+using ModelsLibrary.Enums;
 using ServicesLibrary.Exceptions;
 using ServicesLibrary.Response;
 using ServicesLibrary.Services.Interface;
@@ -34,11 +35,20 @@ namespace ServicesLibrary.Services
             }
 
             // ver que pasa cuando la password no se guardo hasheada en la BD
-
-            if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
+            if(user.Role != UserRole.Admin)
             {
-                throw new NotFoundException("Email o Password incorrectos");
+                if (!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password))
+                {
+                    throw new NotFoundException("Email o Password incorrectos");
+                }
+            } else
+            {
+                if(loginDTO.Password != user.Password)
+                {
+                    throw new NotFoundException("Email o Password incorrectos");
+                }
             }
+            
 
             var token = _tokenService.GenerateToken(user);
             return token;

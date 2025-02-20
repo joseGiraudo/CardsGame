@@ -57,7 +57,6 @@ namespace WebApi.Controllers
 
         [HttpPost("")]
         [Authorize]
-        [AllowAnonymous] // por los players que pueden autoregistrarse
         public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
             if (!ModelState.IsValid)

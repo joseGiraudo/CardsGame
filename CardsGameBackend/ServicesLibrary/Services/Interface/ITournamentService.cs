@@ -17,6 +17,6 @@ namespace ServicesLibrary.Services.Interface
         public Task<string> DeleteById(int id);
         public Task RegisterPlayer(int tournamentId, int playerId, int deckId);
         public Task AdvanceTournamentPhase(int tournamentId);
-        public Task<int> CalculateMaxPlayersAsync(int tournamentId);
+        public int CalculateMaxPlayersAsync(DateTime start, DateTime end);
     }
 }

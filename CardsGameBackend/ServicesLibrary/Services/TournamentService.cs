@@ -86,7 +86,7 @@ namespace ServicesLibrary.Services
 
 
             // primero reviso que haya cupo
-            int maxPlayers = await CalculateMaxPlayersAsync(tournamentId);
+            int maxPlayers = CalculateMaxPlayersAsync(tournament.StartDate, tournament.EndDate);
 
             List<TournamentPlayer> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
             
@@ -195,22 +195,11 @@ namespace ServicesLibrary.Services
             await _tournamentDAO.UpdateAsync(tournament);
         }
 
-        public async Task<int> CalculateMaxPlayersAsync(int tournamentId)
+        public int CalculateMaxPlayersAsync(DateTime start, DateTime end)
         {
             int maxPlayers = 0;
-            
-            // Duracion en días del torneo
-            Tournament tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
-
-            int duration = (tournament.EndDate - tournament.StartDate).Days;
-
-
-            // por ahora supongo que se juegan 8 partidos por dia
             int games = 0;
             int gameDurationMinutes = 30;
-
-            DateTime start = tournament.StartDate;
-            DateTime end = tournament.EndDate;
 
             DateTime current = start;
 
