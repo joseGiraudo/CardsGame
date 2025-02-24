@@ -244,6 +244,43 @@ namespace ServicesLibrary.Services
             return maxPlayers;
         }
 
+        public int CalculateMaxPlayersAsync2(DateTime start, DateTime end)
+        {
+            int maxPlayers = 0;
+            int games = 0;
+            int gameDuration = 30 * 60;
+
+            int dayDuration = 24 * 60 * 60;
+
+            TimeSpan difference = end - start;
+            double totalSeconds = difference.TotalSeconds;
+
+            while(totalSeconds > dayDuration)
+            {
+                totalSeconds -= dayDuration;
+            }
+
+            double dayFreeTime = dayDuration - totalSeconds;
+
+            DateTime current = start;
+            DateTime endOfDay = start.AddSeconds(totalSeconds);
+
+            while(current <= end)
+            {
+                while((endOfDay - current).TotalSeconds >= gameDuration)
+                {
+                    games ++;
+                    current = current.AddSeconds(gameDuration);
+                }
+                current = current.AddSeconds(dayFreeTime);
+                endOfDay = endOfDay.AddDays(1);
+            }        
+            
+            maxPlayers = games - 1;
+
+            return maxPlayers;
+        }
+
 
         private async Task CheckDeck(int deckId)
         {

@@ -18,5 +18,6 @@ namespace ServicesLibrary.Services.Interface
         public Task RegisterPlayer(int tournamentId, int playerId, int deckId);
         public Task AdvanceTournamentPhase(int tournamentId);
         public int CalculateMaxPlayersAsync(DateTime start, DateTime end);
+        public int CalculateMaxPlayersAsync2(DateTime start, DateTime end);
     }
 }

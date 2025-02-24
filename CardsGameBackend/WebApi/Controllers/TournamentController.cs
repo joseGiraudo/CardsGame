@@ -87,7 +87,7 @@ namespace WebApi.Controllers
             try
             {
                 var tournament = await _tournamentService.GetById(tournamentId);
-                var maxPlayers = _tournamentService.CalculateMaxPlayersAsync(tournament.StartDate, tournament.EndDate);
+                var maxPlayers = _tournamentService.CalculateMaxPlayersAsync2(tournament.StartDate, tournament.EndDate);
                 return Ok(maxPlayers);
             }
             catch (Exception ex)
