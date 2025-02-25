@@ -117,6 +117,8 @@ namespace ServicesLibrary.Services
 
         private async Task StartTournament(Tournament tournament)
         {
+            // priemro revisar que haya lista de jueces y series de cartas habilitadas
+
             // obtengo los jugadores registrados
             var players = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
 
@@ -285,6 +287,7 @@ namespace ServicesLibrary.Services
         private async Task CheckDeck(int deckId)
         {
             // este metodo debe obtener las cartas del deck y chequear que esten en la serie de cartas permitida
+            Deck playerDeck = await _
         }
         
 

@@ -78,6 +78,55 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+
+
+        public async Task<bool> CreateDeck(string name, int playerId)
+        {
+            string query = @"INSERT INTO decks (playerId, name) " +
+                " VALUES (@PlayerId, @Name);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { PlayerId = playerId, Name = name });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> UpdateDeck(int deckId, string name, int playerId)
+        {
+            string query = @"UPDATE decks SET name = @Name WHERE id = @DeckId and playerId = @PlayerId;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { Name = name, DeckId = deckId, PlayerId = playerId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
         public async Task<bool> AssignCardToDeck(int cardId, int deckId)
         {
             string query = @"INSERT INTO decks_cards (deckId, cardId) VALUES (@DeckId, @CardId);";
@@ -119,6 +168,34 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     int rowsAffected = await connection.ExecuteAsync(query, new { DeckId = deckId, CardId = cardId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+
+
+        // ver si esto los dejo aca o los muevo a otro service
+
+        public async Task<bool> CreateCardSeries(string name)
+        {
+            string query = @"INSERT INTO collections (name, releaseDate) " +
+                " VALUES (@Name, @ReleaseDate);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { Name = name, ReleaseDate = DateTime.UtcNow });
                     return rowsAffected > 0;
                 }
             }
@@ -186,28 +263,5 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<bool> CreateCardSeries(string name)
-        {
-            string query = @"INSERT INTO collections (name, releaseDate) " +
-                " VALUES (@Name, @ReleaseDate);";
-
-            try
-            {
-                using (var connection = new MySqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    int rowsAffected = await connection.ExecuteAsync(query, new { Name = name, ReleaseDate = DateTime.UtcNow });
-                    return rowsAffected > 0;
-                }
-            }
-            catch (MySqlException ex)
-            {
-                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
-            }
-        }
     }
 }
