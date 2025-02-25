@@ -187,7 +187,7 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<bool> CreateCardSeries(string name)
         {
-            string query = @"INSERT INTO collections (name, releaseDate) " +
+            string query = @"INSERT INTO series (name, releaseDate) " +
                 " VALUES (@Name, @ReleaseDate);";
 
             try
@@ -256,6 +256,62 @@ namespace DataAccessLibrary.DAOs
             catch (MySqlException ex)
             {
                 throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> ExistsSeries(int seriesId)
+        {
+            string query = @"SELECT COUNT(1) FROM series WHERE id = @SeriesId);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int count = await connection.QueryFirstOrDefault(query, new { SeriesId = seriesId });
+
+                    return count > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+
+        public async Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId)
+        {
+            string query = @"INSERT INTO tournament_series (tournamentId, seriesId) VALUES (@TournamentId, @SeriesId);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { TournamentId = tournamentId, SeriesId = seriesId });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                // Verifica si el error es por duplicado (MySQL Error Code 1062)
+                if (ex.Number == 1062)
+                {
+                    throw new DatabaseException("La carta ya se encuentra en la serie.", ex);
+                }
+                else
+                {
+                    throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+                }
             }
             catch (Exception ex)
             {

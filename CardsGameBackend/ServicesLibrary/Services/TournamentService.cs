@@ -18,12 +18,17 @@ namespace ServicesLibrary.Services
         private readonly ITournamentDAO _tournamentDAO;
         private readonly ITournamentPlayerDAO _tournamentPlayerDAO;
         private readonly IGameDAO _gameDAO;
+        private readonly IUserDAO _userDAO;
+        private readonly IPlayerCardDAO _playerCardDAO;
 
-        public TournamentService(ITournamentDAO tournamentDAO, ITournamentPlayerDAO tournamentPlayerDAO, IGameDAO gameDAO)
+        public TournamentService(ITournamentDAO tournamentDAO, ITournamentPlayerDAO tournamentPlayerDAO,
+            IGameDAO gameDAO, IUserDAO userDAO, IPlayerCardDAO playerCardDAO)
         {
             _tournamentDAO = tournamentDAO;
             _tournamentPlayerDAO = tournamentPlayerDAO;
             _gameDAO = gameDAO;
+            _userDAO = userDAO;
+            _playerCardDAO = playerCardDAO;
         }
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
@@ -74,7 +79,7 @@ namespace ServicesLibrary.Services
             }
         }
 
-        public async Task RegisterPlayer(int tournamentId, int playerId, int deckId)
+        public async Task<bool> RegisterPlayer(int tournamentId, int playerId, int deckId)
         {
             // el torneo existe y esta en etapa de registro?
             var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
@@ -95,7 +100,50 @@ namespace ServicesLibrary.Services
 
 
 
-            await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
+            return await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
+
+            // conviene devolver un boolean para saber si se registro?
+        }
+
+        public async Task<bool> AssignJudgeToTournament(int tournamentId, int judgeId)
+        {
+            // el torneo existe y esta en etapa de registro?
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+            if (tournament == null)
+                throw new NotFoundException("El torneo no existe");
+
+            //if (tournament.Phase != TournamentPhase.Registration)
+            //    throw new RegistrationClosedException("No se permiten mas inscripciones en el torneo");
+
+            var judge = await _userDAO.GetById(judgeId);
+            if (judge == null)
+                throw new NotFoundException("No se encontro el juez");
+            if (judge.Role != UserRole.Judge)
+                throw new UnauthorizedRoleException("Solo se permiten asignar jueces");
+
+
+            return await _tournamentPlayerDAO.RegisterJudgeAsync(tournamentId, judgeId);
+
+            // conviene devolver un boolean para saber si se registro?
+        }
+
+
+        public async Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId)
+        {
+            // el torneo existe y esta en etapa de registro?
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+            if (tournament == null)
+                throw new NotFoundException("El torneo no existe");
+
+            //if (tournament.Phase != TournamentPhase.Registration)
+            //    throw new RegistrationClosedException("No se permiten mas inscripciones en el torneo");
+
+            var series = await _playerCardDAO.ExistsSeries(seriesId);
+            if (!series)
+                throw new NotFoundException("La serie seleccionada no se encontro");
+
+
+            return await _playerCardDAO.AssignSeriesToTournament(tournamentId, seriesId);
 
             // conviene devolver un boolean para saber si se registro?
         }
@@ -287,7 +335,7 @@ namespace ServicesLibrary.Services
         private async Task CheckDeck(int deckId)
         {
             // este metodo debe obtener las cartas del deck y chequear que esten en la serie de cartas permitida
-            Deck playerDeck = await _
+            
         }
         
 
