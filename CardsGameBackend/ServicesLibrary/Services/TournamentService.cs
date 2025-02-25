@@ -54,6 +54,9 @@ namespace ServicesLibrary.Services
                 DateTime startDateUtc = TimeZoneInfo.ConvertTimeToUtc(localStartDate, timeZone);
                 DateTime endDateUtc = TimeZoneInfo.ConvertTimeToUtc(localEndDate, timeZone);
 
+                if (startDateUtc < DateTime.UtcNow)
+                    throw new BadRequestException("La fecha de inicio debe ser mayor a la fecha actual");
+
                 Tournament tournament = new Tournament
                 {
                     Name = tournamentDTO.Name,
@@ -101,8 +104,6 @@ namespace ServicesLibrary.Services
 
 
             return await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
-
-            // conviene devolver un boolean para saber si se registro?
         }
 
         public async Task<bool> AssignJudgeToTournament(int tournamentId, int judgeId)
@@ -123,8 +124,6 @@ namespace ServicesLibrary.Services
 
 
             return await _tournamentPlayerDAO.RegisterJudgeAsync(tournamentId, judgeId);
-
-            // conviene devolver un boolean para saber si se registro?
         }
 
 
@@ -144,8 +143,6 @@ namespace ServicesLibrary.Services
 
 
             return await _playerCardDAO.AssignSeriesToTournament(tournamentId, seriesId);
-
-            // conviene devolver un boolean para saber si se registro?
         }
 
         public async Task AdvanceTournamentPhase(int tournamentId)
@@ -172,6 +169,8 @@ namespace ServicesLibrary.Services
 
             if (players.Count < 2)
                 throw new InvalidOperationException("No hay suficientes jugadores para comenzar el torneo");
+
+            // TODO: validar que haya jueces asignados al torneo
 
             // Creo una ronda de partidos
             await CreateNextRoundGames(tournament, players);
