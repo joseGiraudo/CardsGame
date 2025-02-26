@@ -44,6 +44,8 @@ builder.Services.AddScoped<ITournamentPlayerDAO, TournamentPlayerDAO>();
 builder.Services.AddScoped<IPlayerCardDAO, PlayerCardDAO>();
 builder.Services.AddScoped<IPlayerCardService, PlayerCardService>();
 
+builder.Services.AddScoped<ISeriesDAO, SeriesDAO>();
+builder.Services.AddScoped<ISeriesService, SeriesService>();
 
 
 
