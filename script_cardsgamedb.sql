@@ -165,3 +165,20 @@ CREATE TABLE refresh_tokens (
    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+
+-- Select para obtener los jugadores invistos de un torneo
+SELECT DISTINCT u.id, u.name
+FROM users u
+JOIN games g ON u.id = g.player1 OR u.id = g.player2
+WHERE g.tournamentId = @tournamentId
+AND u.id NOT IN (
+    SELECT DISTINCT CASE 
+        WHEN g.player1 != g.winnerId THEN g.player1
+        WHEN g.player2 != g.winnerId THEN g.player2
+    END
+    FROM games g
+    WHERE g.tournamentId = @tournamentId
+    AND g.winnerId IS NOT NULL
+);

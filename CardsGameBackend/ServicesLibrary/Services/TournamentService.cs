@@ -398,5 +398,26 @@ namespace ServicesLibrary.Services
             return utcDateTime.TimeOfDay;
         }
 
+
+
+
+        //metodo para calcular la ronda en la que va el torneo
+        private int GetTournamentRound(int players, int gamesPlayed)
+        {
+            int round = 0;
+
+            return round;
+        }
+
+        // metodo para calcular la cantidad de rondas que tiene un torneo
+        private int CalculateTournamentRounds(int players)
+        {
+            double r = Math.Log(players, 2);
+
+            int rounds = (int)Math.Ceiling(r);
+
+            return rounds;
+        }
+
     }
 }
