@@ -181,6 +181,29 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<List<int>> GetCardsByDeckId(int deckId)
+        {
+            string query = @"SELECT cardId FROM deck_cards WHERE deckId = @DeckId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    List<int> cardsIds = (await connection.QueryAsync<int>(query, new { DeckId = deckId })).ToList();
+                    return cardsIds;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
 
 
     }

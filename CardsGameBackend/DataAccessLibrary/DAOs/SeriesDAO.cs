@@ -154,5 +154,29 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
+
+        public async Task<bool> CheckCardInSeries(int cardId, int seriesId)
+        {
+            string query = @"SELECT COUNT(1) FROM cards_series WHERE cardId = @CardId AND seriesId = @SeriesId);";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int count = await connection.QueryFirstOrDefault(query, new { CardId = cardId, SeriesId = seriesId });
+
+                    return count > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
     }
 }

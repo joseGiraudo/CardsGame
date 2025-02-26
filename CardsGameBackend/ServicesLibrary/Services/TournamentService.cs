@@ -347,10 +347,21 @@ namespace ServicesLibrary.Services
         }
 
 
-        private async Task CheckDeck(int deckId)
+        private async Task<bool> CheckDeckInSeries(int deckId, int seriesId)
         {
             // este metodo debe obtener las cartas del deck y chequear que esten en la serie de cartas permitida
-            
+            List<int> cardsIds = await _playerCardDAO.GetCardsByDeckId(deckId);
+
+            foreach (int cardId in cardsIds)
+            {
+
+                bool exists = await _seriesDAO.CheckCardInSeries(cardId, seriesId);
+                if (!exists)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         
 

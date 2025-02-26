@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ModelsLibrary.Models;
 
 namespace DataAccessLibrary.DAOs.Interface
 {
@@ -12,5 +13,6 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<bool> RemoveCardFromCollection(int cardId, int playerId);
         public Task<bool> AssignCardToDeck(int cardId, int deckId);
         public Task<bool> RemoveCardFromDeck(int cardId, int deckId);
+        public Task<List<int>> GetCardsByDeckId(int deckId);
     }
 }

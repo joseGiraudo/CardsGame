@@ -13,6 +13,7 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<bool> RemoveCardFromSeries(int cardId, int seriesId);
         public Task<bool> ExistsSeries(int seriesId);
         public Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId);
+        public Task<bool> CheckCardInSeries(int cardId, int seriesId);
 
     }
 }
