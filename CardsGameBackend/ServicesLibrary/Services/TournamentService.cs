@@ -20,15 +20,17 @@ namespace ServicesLibrary.Services
         private readonly IGameDAO _gameDAO;
         private readonly IUserDAO _userDAO;
         private readonly IPlayerCardDAO _playerCardDAO;
+        private readonly ISeriesDAO _seriesDAO;
 
         public TournamentService(ITournamentDAO tournamentDAO, ITournamentPlayerDAO tournamentPlayerDAO,
-            IGameDAO gameDAO, IUserDAO userDAO, IPlayerCardDAO playerCardDAO)
+            IGameDAO gameDAO, IUserDAO userDAO, IPlayerCardDAO playerCardDAO, ISeriesDAO seriesDAO)
         {
             _tournamentDAO = tournamentDAO;
             _tournamentPlayerDAO = tournamentPlayerDAO;
             _gameDAO = gameDAO;
             _userDAO = userDAO;
             _playerCardDAO = playerCardDAO;
+            _seriesDAO = seriesDAO;
         }
 
         public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
@@ -39,7 +41,15 @@ namespace ServicesLibrary.Services
             if (tournamentDTO.LocalEndDate <= tournamentDTO.LocalStartDate)
                 throw new BadRequestException("la fecha de finalizacion debe ser mayor a la de comienzo");
 
-            // ver que otras validaciones hay
+            // valido que las series esten registradas y las asocio al torneo
+            foreach (var seriesId in tournamentDTO.AvailableSeries)
+            {
+                if(!await _seriesDAO.ExistsSeries(seriesId))
+                {
+                    throw new NotFoundException("No se encontro la serie de cartas con id: " + seriesId);
+                }
+            }
+
 
             try
             {
@@ -68,6 +78,12 @@ namespace ServicesLibrary.Services
                 };
 
                 tournament.Id = await _tournamentDAO.CreateAsync(tournament);
+
+                // con el id del torneo creado, asigno las series de cartas al torneo
+                foreach (var seriesId in tournamentDTO.AvailableSeries)
+                {
+                    await _seriesDAO.AssignSeriesToTournament(tournament.Id, seriesId);
+                }
 
                 //TimeSpan systemUtcOffset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
                 //tournament.StartTime = tournament.StartTime + systemUtcOffset;

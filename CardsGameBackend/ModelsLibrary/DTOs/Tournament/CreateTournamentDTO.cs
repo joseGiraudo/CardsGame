@@ -13,8 +13,9 @@ namespace ModelsLibrary.DTOs.Tournament
         public DateTime LocalEndDate { get; set; }
         public int OrganizerId { get; set; }
         public int CountryId { get; set; }
-
         public string TimeZoneId { get; set; }
+
+        public List<int> AvailableSeries {  get; set; }
 
         // falta agregar la lista de jueces y series habilitadas
     }
