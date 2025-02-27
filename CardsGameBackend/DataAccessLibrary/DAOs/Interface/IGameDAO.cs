@@ -9,12 +9,12 @@ namespace DataAccessLibrary.DAOs.Interface
 {
     public interface IGameDAO
     {
-        Task<Game> GetById(int id);
-        Task<IEnumerable<Game>> GetAll();
-        Task<IEnumerable<Game>> GetByTournamentId(int tournamentId);
-        
-        Task<int> Create(Game game);
-        Task<int> Update(Game game);
-        Task<int> Delete(int id);
+        public Task<Game> GetById(int id);
+        public Task<IEnumerable<Game>> GetAll();
+        public Task<IEnumerable<Game>> GetByTournamentId(int tournamentId);
+        public Task<bool> SetGameWinner(int gameId, int winnerId);
+        public Task<int> Create(Game game);
+        public Task<int> Update(Game game);
+        public Task<int> Delete(int id);
     }
 }

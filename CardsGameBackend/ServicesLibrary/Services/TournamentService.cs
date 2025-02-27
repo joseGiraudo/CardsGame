@@ -198,12 +198,12 @@ namespace ServicesLibrary.Services
         private async Task ScheduleNextRound(Tournament tournament)
         {
             // Obtengo los jugadores que no estan eliminados del torneo
-            var winners = await _tournamentPlayerDAO.GetRoundWinnersAsync(tournament.Id);
+            var winners = await _tournamentPlayerDAO.GetWinnersAsync(tournament.Id);
 
             if (winners.Count() <= 1)
             {
                 // Queda un solo jugador, se finaliza el torneo
-                await FinalizeTournament(tournament, winners.FirstOrDefault().PlayerId);
+                await FinalizeTournament(tournament, winners.FirstOrDefault());
                 return;
             }
 
@@ -211,21 +211,24 @@ namespace ServicesLibrary.Services
             await CreateNextRoundGames(tournament, winners);
         }
 
-        private async Task CreateNextRoundGames(Tournament tournament, List<TournamentPlayer> players)
+        private async Task CreateNextRoundGames(Tournament tournament, List<int> players)
         {
             // ver si sirve desordenar la lista
 
             List<Game> games = new List<Game>();
 
-            if(players.Count % 2 != 0)
+            Random rnd = new Random();
+            List<int> playersShuffled = players.OrderBy(x => rnd.Next()).ToList();
+
+            if (playersShuffled.Count % 2 != 0)
             {
-                TournamentPlayer lastPlayer = players.Last();
+                int lastPlayer = playersShuffled[^1];
                 var game = new Game
                 {
                     TournamentId = tournament.Id,
-                    Player1Id = lastPlayer.PlayerId,
-                    Player2Id = lastPlayer.PlayerId, // ver si admito valores null para el player 2 o como manejarlo
-                    WinnerId = lastPlayer.PlayerId // dejarlo null y que el juez a mano lo de como ganador
+                    Player1Id = lastPlayer,
+                    Player2Id = lastPlayer, // ver si admito valores null para el player 2 o como manejarlo
+                    WinnerId = lastPlayer // dejarlo null y que el juez a mano lo de como ganador
                     // falta el start date
                 };
                 // lo guardo en la BD
@@ -233,14 +236,14 @@ namespace ServicesLibrary.Services
                 games.Add(game);
             }
 
-            for (int i = 0; i < players.Count - 1; i += 2)
+            for (int i = 0; i < playersShuffled.Count - 1; i += 2)
             {
                 // crear un Game con 2 jugadores
                 var game = new Game
                 {
                     TournamentId = tournament.Id,
-                    Player1Id = players[i].PlayerId,
-                    Player2Id = players[i + 1].PlayerId,
+                    Player1Id = playersShuffled[i],
+                    Player2Id = playersShuffled[i + 1],
                     WinnerId = null
                     // falta el start date
                 };

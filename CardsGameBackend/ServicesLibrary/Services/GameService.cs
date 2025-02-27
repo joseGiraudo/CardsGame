@@ -34,7 +34,7 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
-        public async Task FinalizeGame(int gameId, int winnerId)
+        public async Task<bool> FinalizeGame(int gameId, int winnerId)
         {
             Game game = await GetById(gameId);
 
@@ -48,26 +48,20 @@ namespace ServicesLibrary.Services
                 throw new InconsistentException("El juego ya fue oficializado");
             }
 
-            int losserId = 0;
-
             if (game.Player1Id == winnerId)
             {
-                losserId = game.Player2Id;
                 game.WinnerId = winnerId;
             } else if (game.Player2Id == winnerId) 
             {
-                losserId = game.Player1Id;
                 game.WinnerId = winnerId;
             } else
             {
                 throw new InconsistentException("El id de ganador no se encentra en esta partida");
             }
 
-            await _gameDAO.Update(game);
-
-            await _tournamentPlayerDAO.EliminatePlayer(game.TournamentId, losserId);
-
-            // que puedo devolver aca??????          
+            return await _gameDAO.SetGameWinner(gameId, winnerId);
+                       
+            // devolver un booleano de que el juego fue oficializado
 
         }
 

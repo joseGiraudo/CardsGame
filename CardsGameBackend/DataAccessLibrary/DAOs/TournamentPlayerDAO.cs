@@ -60,6 +60,8 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+
+        // este metodo se elimina
         public async Task EliminatePlayer(int tournamentId, int playerId)
         {
             string query = @"
@@ -106,6 +108,34 @@ namespace DataAccessLibrary.DAOs
                     TournamentId = tournamentId
                 });
                 return players.ToList();
+            }
+
+        }
+
+        public async Task<List<int>> GetWinnersAsync(int tournamentId)
+        {
+            string query = @"SELECT DISTINCT u.id
+                            FROM users u
+                            JOIN games g ON u.id = g.player1 OR u.id = g.player2
+                            WHERE g.tournamentId = @TournamentId
+                            AND u.id NOT IN (
+                                SELECT DISTINCT CASE 
+                                    WHEN g.player1 != g.winnerId THEN g.player1
+                                    WHEN g.player2 != g.winnerId THEN g.player2
+                                END
+                                FROM games g
+                                WHERE g.tournamentId = @tournamentId
+                                AND g.winnerId IS NOT NULL
+                            );";
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                var playerIds = await connection.QueryAsync<int>(query, new
+                {
+                    TournamentId = tournamentId
+                });
+                return playerIds.ToList();
             }
 
         }

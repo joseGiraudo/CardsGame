@@ -13,6 +13,7 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task EliminatePlayer(int tournamentId, int playerId);
         public Task<List<TournamentPlayer>> GetTournamentPlayersAsync(int tournamentId);
         public Task<List<TournamentPlayer>> GetRoundWinnersAsync(int tournamentId);
+        public Task<List<int>> GetWinnersAsync(int tournamentId);
         public Task<bool> RegisterJudgeAsync(int tournamentId, int judgeId);
     }
 }

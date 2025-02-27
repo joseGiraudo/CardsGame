@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using DataAccessLibrary.DAOs.Interface;
+using DataAccessLibrary.Exceptions;
 using Microsoft.Extensions.Configuration;
 using ModelsLibrary.Models;
 using MySql.Data.MySqlClient;
@@ -93,6 +94,33 @@ namespace DataAccessLibrary.DAOs
                     throw new Exception("Juegos no encontrados para ese torneo");
                 }
                 return games;
+            }
+        }
+
+        public async Task<bool> SetGameWinner(int gameId, int winnerId)
+        {
+            string query = @"UPDATE games SET winnerId = @WinnerId WHERE id = @GameId;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    int rowsAffected = await connection.ExecuteAsync(query, new
+                    {
+                        WinnerId = winnerId,
+                        GameId  = gameId
+                    });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 
