@@ -34,8 +34,13 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> FinalizeGame(int gameId, int winnerId)
+        public async Task<bool> FinalizeGame(int gameId, int winnerId, int judgeId)
         {
+            // tengo que verificar que el juez pertenezca al torneo?
+            // conviene hacerlo directamente en una sentencia SQL?
+
+
+
             Game game = await GetById(gameId);
 
             if (game.StartDate.AddMinutes(30) < DateTime.Now)

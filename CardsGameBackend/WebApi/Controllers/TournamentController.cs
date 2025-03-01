@@ -75,9 +75,12 @@ namespace WebApi.Controllers
         [HttpPost("{tournamentId}/games")]
         public async Task<IActionResult> FinalizeGame(int tournamentId, [FromBody] int winnerId)
         {
-            await _gameService.FinalizeGame(tournamentId, winnerId);
+            int judgeId = 1;
 
-            return Ok("Juego Oficializado correctamente");
+            if (await _gameService.FinalizeGame(tournamentId, winnerId, judgeId))
+                return Ok("Juego Oficializado correctamente");
+
+            return BadRequest("No se pudo oficializar el partido");
         }
 
 

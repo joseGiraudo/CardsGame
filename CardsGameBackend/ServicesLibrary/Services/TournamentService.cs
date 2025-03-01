@@ -153,12 +153,12 @@ namespace ServicesLibrary.Services
             //if (tournament.Phase != TournamentPhase.Registration)
             //    throw new RegistrationClosedException("No se permiten mas inscripciones en el torneo");
 
-            var series = await _playerCardDAO.ExistsSeries(seriesId);
+            var series = await _seriesDAO.ExistsSeries(seriesId);
             if (!series)
                 throw new NotFoundException("La serie seleccionada no se encontro");
 
 
-            return await _playerCardDAO.AssignSeriesToTournament(tournamentId, seriesId);
+            return await _seriesDAO.AssignSeriesToTournament(tournamentId, seriesId);
         }
 
         public async Task AdvanceTournamentPhase(int tournamentId)
@@ -181,15 +181,15 @@ namespace ServicesLibrary.Services
             // priemro revisar que haya lista de jueces y series de cartas habilitadas
 
             // obtengo los jugadores registrados
-            var players = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
+            var playersIds = await _tournamentPlayerDAO.GetWinnersAsync(tournament.Id);
 
-            if (players.Count < 2)
+            if (playersIds.Count < 2)
                 throw new InvalidOperationException("No hay suficientes jugadores para comenzar el torneo");
 
             // TODO: validar que haya jueces asignados al torneo
 
             // Creo una ronda de partidos
-            await CreateNextRoundGames(tournament, players);
+            await CreateNextRoundGames(tournament, playersIds);
 
             tournament.Phase = TournamentPhase.InProgress;
             await _tournamentDAO.UpdateAsync(tournament);
@@ -213,12 +213,17 @@ namespace ServicesLibrary.Services
 
         private async Task CreateNextRoundGames(Tournament tournament, List<int> players)
         {
-            // ver si sirve desordenar la lista
-
             List<Game> games = new List<Game>();
 
             Random rnd = new Random();
             List<int> playersShuffled = players.OrderBy(x => rnd.Next()).ToList();
+
+
+            // como manejo la fecha de inicio de cada partida?
+            // tomo desde a finalización de la ultima partida?
+            // y la primera es la fecha de inicio del torneo?
+
+
 
             if (playersShuffled.Count % 2 != 0)
             {
@@ -307,7 +312,7 @@ namespace ServicesLibrary.Services
                     }
                 }
             }           
-            maxPlayers = games - 1;
+            maxPlayers = games + 1;
 
             return maxPlayers;
         }
@@ -344,7 +349,7 @@ namespace ServicesLibrary.Services
                 endOfDay = endOfDay.AddDays(1);
             }        
             
-            maxPlayers = games - 1;
+            maxPlayers = games + 1;
 
             return maxPlayers;
         }
@@ -365,6 +370,8 @@ namespace ServicesLibrary.Services
                 }
             }
             return true;
+
+            // manejarlo en una consulta de sql
         }
         
 
