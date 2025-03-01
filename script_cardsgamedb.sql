@@ -182,3 +182,15 @@ AND u.id NOT IN (
     WHERE g.tournamentId = @tournamentId
     AND g.winnerId IS NOT NULL
 );
+
+-- Consulta para saber si todas las cartas de un mazo pertenecen
+-- a un conjunto de series
+SELECT COUNT(*) = (
+    SELECT COUNT(*) 
+    FROM decks_cards 
+    WHERE deckId = @deckId
+) AS all_cards_in_series
+FROM decks_cards dc
+JOIN cards_series cs ON dc.cardId = cs.cardId
+WHERE dc.deckId = @deckId AND cs.seriesId IN (@seriesId1, @seriesId2, ...);
+	
