@@ -117,7 +117,7 @@ namespace ServicesLibrary.Services
             if(playersRegistered.Count() >= maxPlayers)
                 throw new RegistrationClosedException("Cupo del torneo completado. No se admiten mas jugadors");
 
-
+            // revisar que el mazo este permitido
 
             return await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
         }
