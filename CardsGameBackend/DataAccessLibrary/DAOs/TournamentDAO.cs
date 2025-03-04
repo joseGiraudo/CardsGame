@@ -180,8 +180,6 @@ namespace DataAccessLibrary.DAOs
                 return await connection.QueryAsync<Card>(query, parameters);
             }
         }
-}
-
 
         // metodo para convertir los horarios del torneo en UTC
         private TimeSpan ConvertToUtcTimeOnly(TimeOnly time)
