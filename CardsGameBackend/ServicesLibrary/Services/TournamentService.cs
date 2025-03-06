@@ -118,6 +118,10 @@ namespace ServicesLibrary.Services
                 throw new RegistrationClosedException("Cupo del torneo completado. No se admiten mas jugadors");
 
             // revisar que el mazo este permitido
+            var invalidCards = await _tournamentPlayerDAO.GetInvalidCards(deckId, tournamentId);
+
+            if(invalidCards.Count() > 0)
+                throw new InvalidDeckException();
 
             return await _tournamentPlayerDAO.RegisterPlayerAsync(tournamentId, playerId, deckId);
         }
@@ -223,7 +227,18 @@ namespace ServicesLibrary.Services
             // tomo desde a finalización de la ultima partida?
             // y la primera es la fecha de inicio del torneo?
 
+            var lastGameDate = await _gameDAO.GetLastGameDateAsync(tournament.Id);
 
+            DateTime currentDate;
+
+            if(!lastGameDate.HasValue)
+            {
+                currentDate = tournament.StartDate;
+            } else
+            {
+                currentDate = lastGameDate.Value;
+            }
+            
 
             if (playersShuffled.Count % 2 != 0)
             {
@@ -243,18 +258,32 @@ namespace ServicesLibrary.Services
 
             for (int i = 0; i < playersShuffled.Count - 1; i += 2)
             {
+
+                if(currentDate > tournament.EndDate)
+                {
+                    // sirve verificar esto?
+                }
+
                 // crear un Game con 2 jugadores
                 var game = new Game
                 {
                     TournamentId = tournament.Id,
                     Player1Id = playersShuffled[i],
                     Player2Id = playersShuffled[i + 1],
-                    WinnerId = null
-                    // falta el start date
+                    WinnerId = null,
+                    StartDate = currentDate,
                 };
                 // lo guardo en la BD
                 await _gameDAO.Create(game);
                 games.Add(game);
+
+                if (currentDate.AddMinutes(30).TimeOfDay <= tournament.EndDate.TimeOfDay)
+                {
+                    currentDate = currentDate.AddMinutes(30);
+                } else
+                {
+                    currentDate = currentDate.Date.AddDays(1).Add(tournament.StartDate.TimeOfDay);
+                }
             }
 
             // revisar por las dudas

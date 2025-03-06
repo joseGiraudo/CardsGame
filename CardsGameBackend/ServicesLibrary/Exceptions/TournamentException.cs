@@ -50,4 +50,9 @@ namespace ServicesLibrary.Exceptions
         public InvalidPlayerException(string message = "El id de jugador no es válido.")
             : base(message, 400) { }
     }
+    public class InvalidDeckException : TournamentException
+    {
+        public InvalidDeckException(string message = "El mazo posee cartas no permitidas en este torneo.")
+            : base(message, 400) { }
+    }
 }

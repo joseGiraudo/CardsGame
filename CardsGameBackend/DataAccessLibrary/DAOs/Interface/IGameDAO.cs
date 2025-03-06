@@ -13,6 +13,7 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<IEnumerable<Game>> GetAll();
         public Task<IEnumerable<Game>> GetByTournamentId(int tournamentId);
         public Task<bool> SetGameWinner(int gameId, int winnerId);
+        public Task<DateTime?> GetLastGameDateAsync(int tournamentId);
         public Task<int> Create(Game game);
         public Task<int> Update(Game game);
         public Task<int> Delete(int id);

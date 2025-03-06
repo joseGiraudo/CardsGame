@@ -122,64 +122,7 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<bool> CheckCardsSeries(int deckId, int tournamentId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                var query = @"
-                SELECT 
-                    COUNT(dc.cardId) as TotalCards,
-                    SUM(CASE WHEN cs.cardId IS NOT NULL THEN 1 ELSE 0 END) as ValidCards
-                FROM 
-                    decks_cards dc
-                    LEFT JOIN (
-                        SELECT DISTINCT cs.cardId
-                        FROM cards_series cs
-                        JOIN tournament_series ts ON cs.seriesId = ts.seriesId
-                        WHERE ts.tournamentId = @tournamentId
-                    ) cs ON dc.cardId = cs.cardId
-                WHERE 
-                    dc.deckId = @deckId";
-
-                var result = await connection.QuerySingleAsync(query, new { deckId, tournamentId });
-
-                return result.TotalCards == result.ValidCards;
-            }
-        }
-
-
-        public async Task<IEnumerable<Card>> GetInvalidCards(int deckId, int tournamentId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                var query = @"
-                SELECT 
-                    c.id, 
-                    c.name,
-                    c.attack,
-                    c.defense,
-                    c.illustration
-                FROM 
-                    decks_cards dc
-                    JOIN cards c ON dc.cardId = c.id
-                    LEFT JOIN (
-                        SELECT DISTINCT cs.cardId
-                        FROM cards_series cs
-                        JOIN tournament_series ts ON cs.seriesId = ts.seriesId
-                        WHERE ts.tournamentId = @tournamentId
-                    ) available_cards ON dc.cardId = available_cards.cardId
-                WHERE 
-                    dc.deckId = @deckId
-                    AND available_cards.cardId IS NULL";
-
-                var parameters = new { deckId, tournamentId };
-                return await connection.QueryAsync<Card>(query, parameters);
-            }
-        }
+       
 
         // metodo para convertir los horarios del torneo en UTC
         private TimeSpan ConvertToUtcTimeOnly(TimeOnly time)

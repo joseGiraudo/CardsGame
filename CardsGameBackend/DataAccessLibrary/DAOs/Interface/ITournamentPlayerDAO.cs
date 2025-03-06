@@ -15,5 +15,7 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<List<TournamentPlayer>> GetRoundWinnersAsync(int tournamentId);
         public Task<List<int>> GetWinnersAsync(int tournamentId);
         public Task<bool> RegisterJudgeAsync(int tournamentId, int judgeId);
+        Task<bool> CheckCardsSeries(int deckId, int tournamentId);
+        public Task<IEnumerable<Card>> GetInvalidCards(int deckId, int tournamentId);
     }
 }

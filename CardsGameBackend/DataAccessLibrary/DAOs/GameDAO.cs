@@ -124,6 +124,23 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<DateTime?> GetLastGameDateAsync(int tournamentId)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            string query = "SELECT MAX(startDate) FROM games WHERE tournamentId = @TournamentId;";
+
+            var lastDate = await connection.QueryFirstOrDefaultAsync<DateTime?>(query, new { TournamentId = tournamentId });
+
+            if(lastDate == null)
+            {
+                return null;
+            }
+
+            return lastDate;
+        }
+
+
+
         public Task<int> Update(Game game)
         {
             throw new NotImplementedException();
