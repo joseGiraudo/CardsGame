@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services;
 using ServicesLibrary.Services.Interface;
 
 namespace WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("cards")]
     public class CardController : ControllerBase
@@ -29,8 +32,9 @@ namespace WebApi.Controllers
             return Ok(card);
         }
 
+        [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost]
-        public async Task<IActionResult> CreateCard(Card card)
+        public async Task<IActionResult> CreateCard([FromBody] Card card)
         {
             if (card == null)
             {
@@ -40,5 +44,9 @@ namespace WebApi.Controllers
             var cardCreated = await _cardService.Create(card);
             return Ok(cardCreated);
         }
+
+
+        // endpoints para crear un mazo
+
     }
 }

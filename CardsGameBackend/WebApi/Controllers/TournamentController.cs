@@ -47,6 +47,7 @@ namespace WebApi.Controllers
 
 
         // registro de un player a un torneo
+        [AllowAnonymous]
         [HttpPost("{tournamentId}/register/{deckId}")]
         public async Task<IActionResult> TournamentRegistration(int tournamentId, int deckId)
         {
@@ -64,23 +65,11 @@ namespace WebApi.Controllers
 
 
         [HttpGet("{tournamentId}/games")]
-        public async Task<IActionResult> GetGamesById(int tournamentId)
+        public async Task<IActionResult> GetGamesByTournamentId(int tournamentId)
         {
             var games = await _gameService.GetByTournamentId(tournamentId);
 
             return Ok(games);
-        }
-
-        // registro de un player a un torneo
-        [HttpPost("{tournamentId}/games")]
-        public async Task<IActionResult> FinalizeGame(int tournamentId, [FromBody] int winnerId)
-        {
-            int judgeId = 1;
-
-            if (await _gameService.FinalizeGame(tournamentId, winnerId, judgeId))
-                return Ok("Juego Oficializado correctamente");
-
-            return BadRequest("No se pudo oficializar el partido");
         }
 
 

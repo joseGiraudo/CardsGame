@@ -36,22 +36,18 @@ namespace ServicesLibrary.Services
 
         public async Task<bool> FinalizeGame(int gameId, int winnerId, int judgeId)
         {
-            // tengo que verificar que el juez pertenezca al torneo?
-            // conviene hacerlo directamente en una sentencia SQL?
-
+            // El juez puede oficializar el game?
+            if (!await _gameDAO.IsJudgeAvailableInTournament(gameId, judgeId))
+                throw new Exception("El juez no pertenece a este torneo");
 
 
             Game game = await GetById(gameId);
 
-            if (game.StartDate.AddMinutes(30) < DateTime.Now)
-            {
-                throw new BadRequestException("El juego no finalizo");
-            }
-
             if(game.WinnerId != null)
-            {
                 throw new InconsistentException("El juego ya fue oficializado");
-            }
+
+            if(game.StartDate < DateTime.UtcNow)
+                throw new Exception("El juego no comenzo");
 
             if (game.Player1Id == winnerId)
             {
@@ -65,8 +61,6 @@ namespace ServicesLibrary.Services
             }
 
             return await _gameDAO.SetGameWinner(gameId, winnerId);
-                       
-            // devolver un booleano de que el juego fue oficializado
 
         }
 

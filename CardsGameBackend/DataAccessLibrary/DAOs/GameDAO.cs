@@ -139,7 +139,20 @@ namespace DataAccessLibrary.DAOs
             return lastDate;
         }
 
+        public async Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId)
+        {
+            string query = @"SELECT EXISTS (
+                    SELECT 1
+                    FROM tournament_judges tj
+                    JOIN games g ON tj.tournamentId = g.tournamentId
+                    WHERE g.id = @GameId AND tj.judgeId = @JudgeId
+            ) AS isAvailable;";
 
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                return await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
+            }
+        }
 
         public Task<int> Update(Game game)
         {

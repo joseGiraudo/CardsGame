@@ -117,6 +117,9 @@ namespace ServicesLibrary.Services
             if(playersRegistered.Count() >= maxPlayers)
                 throw new RegistrationClosedException("Cupo del torneo completado. No se admiten mas jugadors");
 
+            // validacions del deck
+            if (deckId <= 0)
+                throw new InvalidDeckException("Debes seleccionar un amzo para el torneo");
             // revisar que el mazo este permitido
             var invalidCards = await _tournamentPlayerDAO.GetInvalidCards(deckId, tournamentId);
 

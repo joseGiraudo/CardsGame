@@ -39,6 +39,9 @@ namespace ServicesLibrary.Services
 
         public async Task<bool> AssignCardToDeck(int cardId, int deckId)
         {
+            if (await _playerCardDAO.GetDeckCardsQuantity(deckId) > 15)
+                throw new Exception("No se pueden agregar mas cartas al mazo.");
+
             if (await _playerCardDAO.AssignCardToDeck(cardId, deckId))
             {
                 return true;
