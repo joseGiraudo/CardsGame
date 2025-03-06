@@ -36,6 +36,8 @@ namespace WebApi.Controllers
             return Ok(game);
         }
 
+
+        // ESTE METODO NO DEBE QUEDAR EXPUESTO (eliminar)
         [HttpPost]
         public async Task<IActionResult> CreateGame([FromBody] Game game)
         {

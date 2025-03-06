@@ -49,14 +49,13 @@ namespace WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAllCards(int id)
         {
-            var user = await _userService.GetById(id);
-            return Ok(user);
+            return Ok();
         }
 
         // dejo eso así junto? o armo otro meteod para registrarse que lo usen unicamente jugadores?
 
         [HttpPost("")]
-        [Authorize]
+        [Authorize(Policy = "AdminOrOrganizer")]
         public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
             if (!ModelState.IsValid)

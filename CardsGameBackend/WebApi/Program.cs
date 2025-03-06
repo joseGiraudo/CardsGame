@@ -3,6 +3,7 @@ using DataAccessLibrary.DAOs;
 using DataAccessLibrary.DAOs.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ModelsLibrary.Enums;
 using ServicesLibrary.Services;
 using ServicesLibrary.Services.Interface;
 using WebApi.Middlewares;
@@ -81,7 +82,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         // ver si hace falta agregar algo de la expiracion del token
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOrOrganizer", policy =>
+        policy.RequireRole(nameof(UserRole.Admin), nameof(UserRole.Organizer)));
+});
 
 
 var app = builder.Build();
