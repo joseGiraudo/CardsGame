@@ -78,16 +78,28 @@ namespace DataAccessLibrary.DAOs
         {
             string query = "SELECT * FROM users";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                connection.Open();
-                var users = await connection.QueryAsync<User>(query);
-                if (users == null || users.Count() < 1)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Usuarios no encontrados");
-                }
+                    connection.Open();
+                    var users = await connection.QueryAsync<User>(query);
+                    if (users == null || users.Count() < 1)
+                    {
+                        throw new Exception("Usuarios no encontrados");
+                    }
 
-                return users;
+                    return users;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 
@@ -95,18 +107,24 @@ namespace DataAccessLibrary.DAOs
         {
             string query = "select * from users " +
                 "where email = @email";
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                connection.Open();
-                var user = await connection.QueryFirstOrDefaultAsync<User>(query, new { email = email });
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var user = await connection.QueryFirstOrDefaultAsync<User>(query, new { email = email });
 
-                return user;
-                //if (user == null)
-                //{
-                //    throw new Exception("Usuario no encontrado");
-                //}
-
-                //return user;
+                    return user;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 
@@ -114,16 +132,28 @@ namespace DataAccessLibrary.DAOs
         {
             string query = @"SELECT * FROM users WHERE id = @id";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                connection.Open();
-                var user = await connection.QueryFirstOrDefaultAsync<User>(query, new {id = id});
-                if (user == null)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Usuario no encontrado");
-                }
+                    connection.Open();
+                    var user = await connection.QueryFirstOrDefaultAsync<User>(query, new { id = id });
+                    if (user == null)
+                    {
+                        throw new Exception("Usuario no encontrado");
+                    }
 
-                return user;
+                    return user;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 

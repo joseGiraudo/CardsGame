@@ -74,16 +74,27 @@ namespace DataAccessLibrary.DAOs
         {
             string query = "SELECT * FROM cards";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                var cards = await connection.QueryAsync<Card>(query);
-                if (cards == null || cards.Count() < 1)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Cartas no encontrados");
-                }
+                    connection.Open();
+                    var cards = await connection.QueryAsync<Card>(query);
+                    if (cards == null || cards.Count() < 1)
+                    {
+                        throw new Exception("Cartas no encontrados");
+                    }
 
-                return cards;
+                    return cards;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error inesperado al obtener las cartas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las cartas", ex);
             }
         }
 
@@ -91,16 +102,28 @@ namespace DataAccessLibrary.DAOs
         {
             string query = "SELECT * FROM cards WHERE id = @id";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                connection.Open();
-                var card = await connection.QueryFirstOrDefaultAsync<Card>(query);
-                if (card == null)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Carta no encontrada");
-                }
+                    connection.Open();
+                    var card = await connection.QueryFirstOrDefaultAsync<Card>(query);
+                    if (card == null)
+                    {
+                        throw new Exception("Carta no encontrada");
+                    }
 
-                return card;
+                    return card;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener la carta: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener la carta", ex);
             }
         }
 
@@ -113,17 +136,28 @@ namespace DataAccessLibrary.DAOs
                      illustration = @illustration 
                  WHERE id = @id;";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                return await connection.ExecuteAsync(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    name = card.Name,
-                    attack = card.Attack,
-                    defense = card.Defense,
-                    illustration = card.Illustration,
-                    id = card.Id
-                });
+                    connection.Open();
+                    return await connection.ExecuteAsync(query, new
+                    {
+                        name = card.Name,
+                        attack = card.Attack,
+                        defense = card.Defense,
+                        illustration = card.Illustration,
+                        id = card.Id
+                    });
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
             }
         }
     }

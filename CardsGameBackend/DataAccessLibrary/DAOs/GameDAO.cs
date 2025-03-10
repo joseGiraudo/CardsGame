@@ -26,18 +26,30 @@ namespace DataAccessLibrary.DAOs
             string query = @"INSERT INTO games (tournamentId, startDate, player1, player2) " +
                 " VALUES (@tournamentId, @startDate, @player1, @player2);" +
                 " SELECT LAST_INSERT_ID();";
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                var gameId = await connection.ExecuteScalarAsync<int>(query, new
-                {
-                    tournamentId = game.TournamentId,
-                    startDate = game.StartDate,
-                    player1 = game.Player1Id,
-                    player2 = game.Player2Id
-                });
 
-                return gameId;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var gameId = await connection.ExecuteScalarAsync<int>(query, new
+                    {
+                        tournamentId = game.TournamentId,
+                        startDate = game.StartDate,
+                        player1 = game.Player1Id,
+                        player2 = game.Player2Id
+                    });
+
+                    return gameId;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al crear la partida: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al crear la partida", ex);
             }
         }
 
@@ -50,16 +62,27 @@ namespace DataAccessLibrary.DAOs
         {
             string query = @"SELECT * FROM games";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                var games = await connection.QueryAsync<Game>(query);
-
-                if (games == null || games.Count() == 0)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Juegos no encontrados");
+                    connection.Open();
+                    var games = await connection.QueryAsync<Game>(query);
+
+                    if (games == null || games.Count() == 0)
+                    {
+                        throw new Exception("No se encontraron partidas");
+                    }
+                    return games;
                 }
-                return games;
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al  obtener las partidas", ex);
             }
         }
 
@@ -67,16 +90,27 @@ namespace DataAccessLibrary.DAOs
         {
             string query = @"SELECT * FROM games WHERE id = @id";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                var game = await connection.QueryFirstOrDefaultAsync<Game>(query, new { id });
-
-                if (game == null)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Juego no encontrado");
+                    connection.Open();
+                    var game = await connection.QueryFirstOrDefaultAsync<Game>(query, new { id });
+
+                    if (game == null)
+                    {
+                        throw new Exception("Partida no encontrada");
+                    }
+                    return game;
                 }
-                return game;
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener la partida: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener la partida", ex);
             }
         }
 
@@ -84,16 +118,27 @@ namespace DataAccessLibrary.DAOs
         {
             string query = @"SELECT * FROM games WHERE tournamentId = @id";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                connection.Open();
-                var games = await connection.QueryAsync<Game>(query, new { id = tournamentId });
-
-                if (games == null || games.Count() == 0)
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    throw new Exception("Juegos no encontrados para ese torneo");
+                    connection.Open();
+                    var games = await connection.QueryAsync<Game>(query, new { id = tournamentId });
+
+                    if (games == null || games.Count() == 0)
+                    {
+                        throw new Exception("Partidas no encontradas para ese torneo");
+                    }
+                    return games;
                 }
-                return games;
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
             }
         }
 
@@ -126,17 +171,31 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<DateTime?> GetLastGameDateAsync(int tournamentId)
         {
-            using var connection = new MySqlConnection(_connectionString);
             string query = "SELECT MAX(startDate) FROM games WHERE tournamentId = @TournamentId;";
 
-            var lastDate = await connection.QueryFirstOrDefaultAsync<DateTime?>(query, new { TournamentId = tournamentId });
-
-            if(lastDate == null)
+            try
             {
-                return null;
-            }
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var lastDate = await connection.QueryFirstOrDefaultAsync<DateTime?>(query, new { TournamentId = tournamentId });
 
-            return lastDate;
+                    if (lastDate == null)
+                    {
+                        return null;
+                    }
+
+                    return lastDate;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
+            }
         }
 
         public async Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId)
@@ -148,10 +207,25 @@ namespace DataAccessLibrary.DAOs
                     WHERE g.id = @GameId AND tj.judgeId = @JudgeId
             ) AS isAvailable;";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                return await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var isAvailable = await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
+
+                    return isAvailable;
+                }
             }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
+            }
+
         }
 
         public Task<int> Update(Game game)

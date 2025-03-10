@@ -78,8 +78,6 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-
-
         public async Task<bool> CreateDeck(string name, int playerId)
         {
             string query = @"INSERT INTO decks (playerId, name) " +
@@ -224,8 +222,6 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
-
-
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -61,39 +62,30 @@ namespace DataAccessLibrary.DAOs
         }
 
 
-        // este metodo se elimina
-        public async Task EliminatePlayer(int tournamentId, int playerId)
-        {
-            string query = @"
-            UPDATE tournament_players 
-            SET isEliminated = TRUE 
-            WHERE tournamentId = @TournamentId AND playerId = @PlayerId";
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.ExecuteAsync(query, new
-                {
-                    TournamentId = tournamentId,
-                    PlayerId = playerId
-                });
-            }
-        }
-
-
         // falta un metodo para traer a todos los jugadores y sus mazos correspondientes a un torneo
         public async Task<List<TournamentPlayer>> GetTournamentPlayersAsync(int tournamentId)
         {
             string query = @"SELECT * FROM tournament_players WHERE tournamentId = @TournamentId;";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                var players = await connection.QueryAsync<TournamentPlayer>(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    TournamentId = tournamentId
-                });
-                return players.ToList();
+                    var players = await connection.QueryAsync<TournamentPlayer>(query, new
+                    {
+                        TournamentId = tournamentId
+                    });
+                    return players.ToList();
+                }
             }
-
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
         }
 
         public async Task<List<TournamentPlayer>> GetRoundWinnersAsync(int tournamentId)
@@ -101,13 +93,25 @@ namespace DataAccessLibrary.DAOs
             string query = @"SELECT * FROM tournament_players " +
                             "WHERE tournamentId = @TournamentId AND isEliminated = false;";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                var players = await connection.QueryAsync<TournamentPlayer>(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    TournamentId = tournamentId
-                });
-                return players.ToList();
+                    var players = await connection.QueryAsync<TournamentPlayer>(query, new
+                    {
+                        TournamentId = tournamentId
+                    });
+                    return players.ToList();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
 
         }
@@ -128,14 +132,26 @@ namespace DataAccessLibrary.DAOs
                                 AND g.winnerId IS NOT NULL
                             );";
 
-            using (var connection = new MySqlConnection(_connectionString))
+            
+            try
             {
-                connection.Open();
-                var playerIds = await connection.QueryAsync<int>(query, new
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    TournamentId = tournamentId
-                });
-                return playerIds.ToList();
+                    connection.Open();
+                    var playerIds = await connection.QueryAsync<int>(query, new
+                    {
+                        TournamentId = tournamentId
+                    });
+                    return playerIds.ToList();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
 
         }
@@ -164,7 +180,7 @@ namespace DataAccessLibrary.DAOs
                 // Verifica si el error es por duplicado (MySQL Error Code 1062)
                 if (ex.Number == 1062)
                 {
-                    throw new DatabaseException("El jugador ya esta registrado.", ex);
+                    throw new DatabaseException("El juez ya esta registrado.", ex);
                 }
                 else
                 {
@@ -179,11 +195,7 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<bool> CheckCardsSeries(int deckId, int tournamentId)
         {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                var query = @"
+            string query = @"
                 SELECT 
                     COUNT(dc.cardId) as TotalCards,
                     SUM(CASE WHEN cs.cardId IS NOT NULL THEN 1 ELSE 0 END) as ValidCards
@@ -198,20 +210,32 @@ namespace DataAccessLibrary.DAOs
                 WHERE 
                     dc.deckId = @deckId";
 
-                var result = await connection.QuerySingleAsync(query, new { deckId, tournamentId });
+            
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
 
-                return result.TotalCards == result.ValidCards;
+                    var result = await connection.QuerySingleAsync(query, new { deckId, tournamentId });
+
+                    return result.TotalCards == result.ValidCards;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 
 
         public async Task<IEnumerable<Card>> GetInvalidCards(int deckId, int tournamentId)
         {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                await connection.OpenAsync();
-
-                var query = @"
+            string query = @"
                 SELECT 
                     c.id, 
                     c.name,
@@ -230,9 +254,24 @@ namespace DataAccessLibrary.DAOs
                 WHERE 
                     dc.deckId = @deckId
                     AND available_cards.cardId IS NULL";
+            
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
 
-                var parameters = new { deckId, tournamentId };
-                return await connection.QueryAsync<Card>(query, parameters);
+                    var parameters = new { deckId, tournamentId };
+                    return await connection.QueryAsync<Card>(query, parameters);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
 
