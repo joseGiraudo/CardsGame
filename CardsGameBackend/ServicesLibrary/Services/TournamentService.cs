@@ -250,9 +250,9 @@ namespace ServicesLibrary.Services
                 {
                     TournamentId = tournament.Id,
                     Player1Id = lastPlayer,
-                    Player2Id = lastPlayer, // ver si admito valores null para el player 2 o como manejarlo
-                    WinnerId = lastPlayer // dejarlo null y que el juez a mano lo de como ganador
-                    // falta el start date
+                    Player2Id = null, // ver si admito valores null para el player 2 o como manejarlo
+                    WinnerId = lastPlayer,
+                    StartDate = null
                 };
                 // lo guardo en la BD
                 await _gameDAO.Create(game);

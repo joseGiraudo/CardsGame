@@ -23,8 +23,8 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<int> Create(Game game)
         {
-            string query = @"INSERT INTO games (tournamentId, startDate, player1, player2) " +
-                " VALUES (@tournamentId, @startDate, @player1, @player2);" +
+            string query = @"INSERT INTO games (tournamentId, startDate, player1, player2, winnerId) " +
+                " VALUES (@tournamentId, @startDate, @player1, @player2, @winnerId);" +
                 " SELECT LAST_INSERT_ID();";
 
             try
@@ -35,15 +35,16 @@ namespace DataAccessLibrary.DAOs
                     var gameId = await connection.ExecuteScalarAsync<int>(query, new
                     {
                         tournamentId = game.TournamentId,
-                        startDate = game.StartDate,
+                        startDate = game.Player2Id == null ? (DateTime?)null : game.StartDate, // No asigna fecha a byes
                         player1 = game.Player1Id,
-                        player2 = game.Player2Id
+                        player2 = game.Player2Id,
+                        winnerId = game.Player2Id == null ? game.Player1Id : (int?)null // Si es bye, gana automáticamente
                     });
 
                     return gameId;
                 }
             }
-            catch (MySqlException ex)
+            catch (MySqlException ex)   
             {
                 throw new DatabaseException($"Error al crear la partida: {ex.Message}", ex);
             }
