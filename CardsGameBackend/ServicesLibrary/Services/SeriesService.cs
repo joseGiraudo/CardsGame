@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
+using ModelsLibrary.Models;
 using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
@@ -13,11 +14,13 @@ namespace ServicesLibrary.Services
     {
         private readonly ISeriesDAO _seriesDAO;
         private readonly ICardDAO _cardDAO;
+        private readonly ITournamentDAO _tournamentDAO;
 
-        public SeriesService(ISeriesDAO seriesDAO, ICardDAO cardDAO)
+        public SeriesService(ISeriesDAO seriesDAO, ICardDAO cardDAO, ITournamentDAO tournamentDAO)
         {
             _seriesDAO = seriesDAO;
             _cardDAO = cardDAO;
+            _tournamentDAO = tournamentDAO;
         }
 
 
@@ -30,6 +33,19 @@ namespace ServicesLibrary.Services
             // tengo que validar que la carta exista y que la serie exista??????
 
             return await _seriesDAO.AssignCardToSeries(cardId, seriesId);
+        }
+
+        public async Task<bool> AssignSeriesToTournament(int tournamentId, List<int> seriesIds)
+        {
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+            if (tournament == null)
+                throw new NotFoundException("No se encontro el torneo con id: " + tournamentId);
+
+            foreach(var serieId in seriesIds)
+            {
+                await _seriesDAO.AssignSeriesToTournament(tournamentId, serieId);
+            }
+            return true;
         }
 
         public async Task<bool> CreateCardSeries(string name)

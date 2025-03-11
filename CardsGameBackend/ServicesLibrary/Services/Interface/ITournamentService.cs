@@ -12,7 +12,7 @@ namespace ServicesLibrary.Services.Interface
     {
         public Task<List<Tournament>> GetAll();
         public Task<Tournament> GetById(int id);
-        public Task<Tournament> Create(CreateTournamentDTO tournamentDTO);
+        public Task<Tournament> Create(CreateTournamentDTO tournamentDTO, int organizerId);
         public Task<Tournament> Update(Tournament tournament);
         public Task<string> DeleteById(int id);
         public Task<bool> RegisterPlayer(int tournamentId, int playerId, int deckId);

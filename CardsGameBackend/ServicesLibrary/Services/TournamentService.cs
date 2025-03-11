@@ -33,7 +33,7 @@ namespace ServicesLibrary.Services
             _seriesDAO = seriesDAO;
         }
 
-        public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO)
+        public async Task<Tournament> Create(CreateTournamentDTO tournamentDTO, int organizerId)
         {
             //if(tournamentDTO.LocalStartDate < DateTime.UtcNow) 
             //    throw new BadRequestException("La fecha de inicio debe ser mayor a la fecha actual");
@@ -73,7 +73,7 @@ namespace ServicesLibrary.Services
                     StartDate = startDateUtc,
                     EndDate = endDateUtc,
                     CountryId = tournamentDTO.CountryId,
-                    OrganizerId = tournamentDTO.OrganizerId,
+                    OrganizerId = organizerId,
                     Phase = TournamentPhase.Registration
                 };
 

@@ -37,7 +37,10 @@ INSERT INTO users (name, username, email, password, countryId, avatar, role, cre
  -- SELECT * FROM users;
  -- SELECT * FROM countries;
  -- SELECT * FROM tournaments;
- 
+ -- SELECT * FROM decks;
+ -- SELECT * FROM decks_cards; 
+ -- SELECT * FROM series;
+ -- SELECT * FROM cards_series; 
  
 -- Tabla de cartas
 CREATE TABLE cards (

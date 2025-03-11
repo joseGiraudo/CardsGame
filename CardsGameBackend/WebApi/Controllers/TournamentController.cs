@@ -42,7 +42,15 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTournament([FromBody] CreateTournamentDTO tournamentDTO)
         {
-            var tournament = await _tournamentService.Create(tournamentDTO);
+
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            var tournament = await _tournamentService.Create(tournamentDTO, userId);
 
             return Ok(tournament);
         }

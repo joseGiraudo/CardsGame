@@ -11,5 +11,6 @@ namespace ServicesLibrary.Services.Interface
         public Task<bool> CreateCardSeries(string name);
         public Task<bool> AssignCardToSeries(int cardId, int seriesId);
         public Task<bool> RemoveCardFromSeries(int cardId, int seriesId);
+        public Task<bool> AssignSeriesToTournament(int tournamentId, List<int> seriesId);
     }
 }

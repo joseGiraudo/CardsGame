@@ -102,14 +102,14 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<bool> ExistsSeries(int seriesId)
         {
-            string query = @"SELECT COUNT(1) FROM series WHERE id = @SeriesId);";
+            string query = @"SELECT COUNT(1) FROM series WHERE id = @SeriesId;";
 
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    int count = await connection.QueryFirstOrDefault(query, new { SeriesId = seriesId });
+                    int count = await connection.ExecuteScalarAsync<int>(query, new { SeriesId = seriesId });
 
                     return count > 0;
                 }

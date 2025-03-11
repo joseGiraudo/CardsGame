@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs.Interface;
+using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
@@ -39,7 +40,7 @@ namespace ServicesLibrary.Services
 
         public async Task<bool> AssignCardToDeck(int cardId, int deckId)
         {
-            if (await _playerCardDAO.GetDeckCardsQuantity(deckId) > 15)
+            if (await _playerCardDAO.GetDeckCardsQuantity(deckId) >= 15)
                 throw new Exception("No se pueden agregar mas cartas al mazo.");
 
             if (await _playerCardDAO.AssignCardToDeck(cardId, deckId))
@@ -56,6 +57,34 @@ namespace ServicesLibrary.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> CreateDeck(string name, int playerId)
+        {
+            if (await _playerCardDAO.CreateDeck(name, playerId))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> UpdateDeck(int deckId, string name, int playerId)
+        {
+            if (await _playerCardDAO.UpdateDeck(deckId, name, playerId))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<int> GetDeckCardsQuantity(int deckId)
+        {
+            return await _playerCardDAO.GetDeckCardsQuantity(deckId);
+        }
+
+        public async Task<List<int>> GetCardsByDeckId(int deckId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
