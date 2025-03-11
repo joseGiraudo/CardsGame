@@ -128,7 +128,7 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<User> GetBUsername(string username)
+        public async Task<User> GetByUsername(string username)
         {
             string query = "select * from users " +
                 "where username = @Username";
