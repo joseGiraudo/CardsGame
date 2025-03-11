@@ -80,7 +80,7 @@ namespace WebApi.Controllers
             }
         }
 
-        [HttpPost("/register")]
+        [HttpPost("register")]
         [AllowAnonymous] // por los players que pueden autoregistrarse
         public async Task<IActionResult> RegisterPlayer(UserDTO userDTO)
         {
@@ -94,7 +94,7 @@ namespace WebApi.Controllers
                 var (creatorId, creatorRole) = GetCurrentUserData();
                 var createdUser = await _userService.CreateUser(userDTO, creatorId, creatorRole);
 
-                return CreatedAtAction("Usuario creado correctamente", createdUser);
+                return Created("Usuario creado correctamente", createdUser);
             }
             catch (UnauthorizedRoleException ex)
             {

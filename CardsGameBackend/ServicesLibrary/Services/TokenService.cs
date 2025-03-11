@@ -49,7 +49,7 @@ namespace ServicesLibrary.Services
                     issuer: jwtSettings["Issuer"],
                     audience: jwtSettings["Audience"],
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(10),
+                    expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpireMinutes"])),
                     signingCredentials: credentials
                 );
 
