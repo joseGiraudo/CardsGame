@@ -142,6 +142,13 @@ namespace ServicesLibrary.Services
             if (user != null)
                 throw new DuplicateEmailException("El email ya se encuentra registrado");
 
+
+            var userByUsername = await _userDAO.GetBUsername(userDTO.Username);
+
+            if (user != null)
+                throw new DuplicateUsernameException("El username ya se encuentra registrado");
+
+
             if (string.IsNullOrWhiteSpace(userDTO.Email))
                 throw new UserException("El email es requerido");
 

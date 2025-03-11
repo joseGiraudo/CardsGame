@@ -128,6 +128,31 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<User> GetBUsername(string username)
+        {
+            string query = "select * from users " +
+                "where username = @Username";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var user = await connection.QueryFirstOrDefaultAsync<User>(query, new { Username = username });
+
+                    return user;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
         public async Task<User> GetById(int id)
         {
             string query = @"SELECT * FROM users WHERE id = @id";

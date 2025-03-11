@@ -12,6 +12,7 @@ namespace DataAccessLibrary.DAOs.Interface
         Task<IEnumerable<User>> GetAll();
         Task<User> GetById(int id);
         Task<User> GetByEmail(string email);
+        public Task<User> GetBUsername(string username);
         Task<int> Create(User user);
         Task<int> Update(User user);
         Task<int> Delete(int id);

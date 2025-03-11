@@ -22,7 +22,11 @@ namespace ServicesLibrary.Exceptions
         public DuplicateEmailException(string message)
             : base(message, 400) { }
     }
-
+    public class DuplicateUsernameException : UserException
+    {
+        public DuplicateUsernameException(string message)
+            : base(message, 400) { }
+    }
     public class UnauthorizedRoleException : UserException
     {
         public UnauthorizedRoleException(string message)

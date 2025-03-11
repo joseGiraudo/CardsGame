@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ModelsLibrary.Enums;
+using ModelsLibrary.Validators;
 
 namespace ModelsLibrary.DTOs.Users
 {
@@ -16,6 +17,7 @@ namespace ModelsLibrary.DTOs.Users
 
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "El nombre de usuario debe tener entre 3 y 50 caracteres.")]
+        [NoSpecialCharacters]  // Aplicar el validador personalizado
         public string Username { get; set; }
 
         [Required(ErrorMessage = "El email es obligatorio.")]
