@@ -110,7 +110,7 @@ namespace ServicesLibrary.Services
 
 
             // primero reviso que haya cupo
-            int maxPlayers = CalculateMaxPlayersAsync(tournament.StartDate, tournament.EndDate);
+            int maxPlayers = CalculateMaxPlayers(tournament.StartDate, tournament.EndDate);
 
             List<TournamentPlayer> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
             
@@ -300,56 +300,7 @@ namespace ServicesLibrary.Services
             await _tournamentDAO.UpdateAsync(tournament);
         }
 
-        public int CalculateMaxPlayersAsync(DateTime start, DateTime end)
-        {
-            int maxPlayers = 0;
-            int games = 0;
-            int gameDurationMinutes = 30;
-
-            DateTime current = start;
-
-            if (start.TimeOfDay < end.TimeOfDay)
-            {
-                while (current <= end)
-                {
-                    double availableMinutes = (end.TimeOfDay - start.TimeOfDay).TotalMinutes;
-                    games +=  (int)(availableMinutes / gameDurationMinutes);
-                    current = current.AddDays(1);
-                }
-            }
-            else
-            {
-                while (current <= end)
-                {
-                    if (current.Date.DayOfYear == start.Date.DayOfYear)
-                    {
-                        // priemr día
-                        double availableMinutes = ((24 * 60) - start.TimeOfDay.TotalMinutes);
-                        games += (int)(availableMinutes / gameDurationMinutes);
-                        current = current.AddHours(24 - start.TimeOfDay.TotalHours + end.TimeOfDay.TotalHours); // avanzo hasta el horario de inicio del dia siguiente
-
-                    }
-                    else if (current.Date.DayOfYear == end.Date.DayOfYear)
-                    {
-                        // ultimo día
-                        double availableMinutes = end.TimeOfDay.TotalMinutes;
-                        games += (int)(availableMinutes / gameDurationMinutes);
-                        current = current.AddDays(1);
-                    } else
-                    {
-                        // resto de días sumo ambas partes
-                        double availableMinutes = (24 * 60) - start.TimeOfDay.TotalMinutes + end.TimeOfDay.TotalMinutes;
-                        games += (int)(availableMinutes / gameDurationMinutes);
-                        current = current.AddDays(1);
-                    }
-                }
-            }           
-            maxPlayers = games + 1;
-
-            return maxPlayers;
-        }
-
-        public int CalculateMaxPlayersAsync2(DateTime start, DateTime end)
+        public int CalculateMaxPlayers(DateTime start, DateTime end)
         {
             int maxPlayers = 0;
             int games = 0;

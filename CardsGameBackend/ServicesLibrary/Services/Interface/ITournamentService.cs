@@ -19,7 +19,6 @@ namespace ServicesLibrary.Services.Interface
         public Task<bool> AssignJudgeToTournament(int tournamentId, int judgeId);
         public Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId);
         public Task AdvanceTournamentPhase(int tournamentId);
-        public int CalculateMaxPlayersAsync(DateTime start, DateTime end);
-        public int CalculateMaxPlayersAsync2(DateTime start, DateTime end);
+        public int CalculateMaxPlayers(DateTime start, DateTime end);
     }
 }

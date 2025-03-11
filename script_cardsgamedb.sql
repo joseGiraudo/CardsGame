@@ -135,9 +135,9 @@ CREATE TABLE tournament_judges (
 CREATE TABLE games (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tournamentId INT NOT NULL,
-    startDate DATETIME NOT NULL,
+    startDate DATETIME, -- puedo permitir null para los aprtidos que no se juegan o doy otr fecha?
     player1 INT NOT NULL,
-    player2 INT NOT NULL,
+    player2 INT, -- permito null para los partidos que no se juegan?
     winnerId INT,
     FOREIGN KEY (tournamentId) REFERENCES tournaments(id) ON DELETE CASCADE,
     FOREIGN KEY (player1) REFERENCES users(id) ON DELETE CASCADE,
@@ -166,7 +166,7 @@ CREATE TABLE refresh_tokens (
    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-
+/*
 
 -- Select para obtener los jugadores invistos de un torneo
 SELECT DISTINCT u.id, u.name
@@ -193,4 +193,6 @@ SELECT COUNT(*) = (
 FROM decks_cards dc
 JOIN cards_series cs ON dc.cardId = cs.cardId
 WHERE dc.deckId = @deckId AND cs.seriesId IN (@seriesId1, @seriesId2, ...);
+	
+*/
 	
