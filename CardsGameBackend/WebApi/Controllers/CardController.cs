@@ -26,7 +26,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("/{id}")]
-        public async Task<IActionResult> GetAllCards(int id)
+        public async Task<IActionResult> GetCardById(int id)
         {
             var card = await _cardService.GetById(id);
             return Ok(card);

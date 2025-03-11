@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModelsLibrary.DTOs.Tournament;
+using ModelsLibrary.Enums;
 using ServicesLibrary.Services.Interface;
 
 namespace WebApi.Controllers
@@ -37,6 +38,7 @@ namespace WebApi.Controllers
             return Ok(tournament);
         }
 
+        [Authorize(Roles = nameof(UserRole.Organizer))]
         [HttpPost]
         public async Task<IActionResult> CreateTournament([FromBody] CreateTournamentDTO tournamentDTO)
         {
@@ -45,9 +47,7 @@ namespace WebApi.Controllers
             return Ok(tournament);
         }
 
-
-        // registro de un player a un torneo
-        [AllowAnonymous]
+        [Authorize(Roles = nameof(UserRole.Player))]
         [HttpPost("{tournamentId}/register/{deckId}")]
         public async Task<IActionResult> TournamentRegistration(int tournamentId, int deckId)
         {
@@ -73,6 +73,7 @@ namespace WebApi.Controllers
         }
 
 
+        // ESTE METODO ESTA EXPUESTO PARA PROBARLO UNICAMENTE
         [HttpGet("max-players/{tournamentId}")]
         public async Task<IActionResult> GetMaxPlayers(int tournamentId)
         {

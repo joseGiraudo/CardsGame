@@ -10,6 +10,7 @@ namespace ModelsLibrary.Enums
     {
         Registration,
         InProgress,
-        Finished
+        Finished,
+        Canceled
     }
 }
