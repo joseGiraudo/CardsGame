@@ -88,33 +88,6 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<List<TournamentPlayer>> GetRoundWinnersAsync(int tournamentId)
-        {
-            string query = @"SELECT * FROM tournament_players " +
-                            "WHERE tournamentId = @TournamentId AND isEliminated = false;";
-
-            
-            try
-            {
-                using (var connection = new MySqlConnection(_connectionString))
-                {
-                    var players = await connection.QueryAsync<TournamentPlayer>(query, new
-                    {
-                        TournamentId = tournamentId
-                    });
-                    return players.ToList();
-                }
-            }
-            catch (MySqlException ex)
-            {
-                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
-            }
-
-        }
 
         public async Task<List<int>> GetWinnersAsync(int tournamentId)
         {

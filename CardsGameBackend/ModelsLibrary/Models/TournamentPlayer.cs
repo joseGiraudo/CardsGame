@@ -11,6 +11,5 @@ namespace ModelsLibrary.Models
         public int TournamentId { get; set; }
         public int PlayerId { get; set; }
         public int? DeckId { get; set; }
-        public bool IsEliminated { get; set; }
     }
 }

@@ -114,7 +114,6 @@ CREATE TABLE tournament_players (
     tournamentId INT,
     playerId INT,
     deckId INT, -- Referencia al mazo del jugador para este torneo
-    isEliminated BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (tournamentId, playerId),
     FOREIGN KEY (tournamentId) REFERENCES tournaments(Id),
     FOREIGN KEY (playerId) REFERENCES users(Id),
