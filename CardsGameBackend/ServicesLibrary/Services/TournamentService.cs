@@ -337,6 +337,27 @@ namespace ServicesLibrary.Services
             return maxPlayers;
         }
 
+        public async Task<bool> DisqualifyPlayer(DisqualificationDTO disqualificationDTO, int judgeId)
+        {
+
+            // primero chequear que el juez pertenezca al torneo
+
+            // chequeo que el player pertenezca al torneo
+
+            // descalificarlo
+            Disqualification disqualification = new Disqualification
+            {
+                PlayerId = disqualificationDTO.PlayerId,
+                TournamentId = disqualificationDTO.TournamentId,
+                Reason = disqualificationDTO.Reason,
+                JudgeId = judgeId
+            };
+            
+            // ver que pasa si esta en una partida
+
+            return await _tournamentDAO.DisqualifyPlayer(disqualification);
+        }
+
 
         private async Task<bool> CheckDeckInSeries(int deckId, int seriesId)
         {

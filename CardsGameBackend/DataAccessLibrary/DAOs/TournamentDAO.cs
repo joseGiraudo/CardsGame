@@ -179,5 +179,39 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<bool> DisqualifyPlayer(Disqualification disqualification)
+        {
+            string query = @"INSERT INTO disqualifications
+                    (playerId, tournamentId, judgeId, reason) " +
+               "VALUES(@PlayerId, @TournamentId, @JudgeId, @Reason); ";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+
+                    var affectedRows = await connection.ExecuteScalarAsync<int>(query,
+                        new
+                        {
+                            PlayerId = disqualification.PlayerId,
+                            TournamentId = disqualification.TournamentId,
+                            JudgeId = disqualification.JudgeId,
+                            Reason = disqualification.Reason,
+                        });
+                    return affectedRows > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al descalificar al jugador: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al descalificar al jugador", ex);
+            }
+        }
+
     }
 }

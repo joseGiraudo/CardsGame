@@ -16,5 +16,6 @@ namespace DataAccessLibrary.DAOs.Interface
         Task UpdateAsync(Tournament tournament);
         Task<int> DeleteAsync(int id);
         Task<IEnumerable<Tournament>> GetByPhaseAsync(TournamentPhase phase);
+        Task<bool> DisqualifyPlayer(Disqualification disqualification);
     }
 }

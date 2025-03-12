@@ -20,5 +20,6 @@ namespace ServicesLibrary.Services.Interface
         public Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId);
         public Task AdvanceTournamentPhase(int tournamentId);
         public int CalculateMaxPlayers(DateTime start, DateTime end);
+        public Task<bool> DisqualifyPlayer(DisqualificationDTO disqualificationDTO, int judgeId);
     }
 }
