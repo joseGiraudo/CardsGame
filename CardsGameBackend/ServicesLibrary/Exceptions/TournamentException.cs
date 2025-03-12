@@ -55,4 +55,15 @@ namespace ServicesLibrary.Exceptions
         public InvalidDeckException(string message = "El mazo posee cartas no permitidas en este torneo.")
             : base(message, 400) { }
     }
+
+    public class TournamentCanceledException : TournamentException
+    {
+        public TournamentCanceledException(string message = "El torneo fue cancelado por un administrador.")
+            : base(message, 400) { }
+    }
+    public class TournamentFinishedException : TournamentException
+    {
+        public TournamentFinishedException(string message = "El torneo ya se encuentra finalizado.")
+            : base(message, 400) { }
+    }
 }

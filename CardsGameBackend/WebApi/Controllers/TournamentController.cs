@@ -108,7 +108,7 @@ namespace WebApi.Controllers
                 return Unauthorized(); // Retorna 401 si el usuario no está autenticado
             }
 
-            // llamar al service
+            await _tournamentService.CancelTournament(tournamentId, userId);
 
             return Ok("El torneo fue cancelado exitosamente");
         }

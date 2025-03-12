@@ -8,6 +8,7 @@ using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Tournament;
 using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
+using Org.BouncyCastle.Cms;
 using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
@@ -180,6 +181,10 @@ namespace ServicesLibrary.Services
                 case TournamentPhase.InProgress:
                     await ScheduleNextRound(tournament);
                     break;
+                case TournamentPhase.Finished:
+                    throw new TournamentFinishedException();
+                case TournamentPhase.Canceled:
+                    throw new TournamentCanceledException();
             }
         }
 
@@ -356,6 +361,17 @@ namespace ServicesLibrary.Services
             // ver que pasa si esta en una partida
 
             return await _tournamentDAO.DisqualifyPlayer(disqualification);
+        }
+        public async Task CancelTournament(int tournamentId, int adminId)
+        {
+            var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
+
+            if(tournament == null)
+                throw new NotFoundException("No se encontro el torneo con id " + tournamentId);
+
+            tournament.Phase = TournamentPhase.Canceled;
+            tournament.WinnerId = null;
+            await _tournamentDAO.UpdateAsync(tournament);
         }
 
 

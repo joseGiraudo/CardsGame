@@ -21,5 +21,6 @@ namespace ServicesLibrary.Services.Interface
         public Task AdvanceTournamentPhase(int tournamentId);
         public int CalculateMaxPlayers(DateTime start, DateTime end);
         public Task<bool> DisqualifyPlayer(DisqualificationDTO disqualificationDTO, int judgeId);
+        public Task CancelTournament(int tournamentId, int adminId);
     }
 }
