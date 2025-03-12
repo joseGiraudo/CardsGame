@@ -100,7 +100,7 @@ CREATE TABLE tournaments (
     startDate DATETIME NOT NULL,
     endDate DATETIME NOT NULL,
     countryId INT,
-    phase ENUM('Registration', 'InProgress', 'Finished') DEFAULT 'Registration',
+    phase ENUM('Registration', 'InProgress', 'Finished', 'Canceled') DEFAULT 'Registration',
     organizerId INT NOT NULL,
     winnerId INT, -- Ganador del torneo
     FOREIGN KEY (countryId) REFERENCES countries(id) ON DELETE SET NULL,

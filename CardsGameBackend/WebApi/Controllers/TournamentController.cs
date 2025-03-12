@@ -80,6 +80,52 @@ namespace WebApi.Controllers
             return Ok(games);
         }
 
+        [Authorize(Roles = nameof(UserRole.Judge))]
+        [HttpPost("disqualify")]
+        public async Task<IActionResult> DisqualifyPlayer([FromBody] DisqualificationDTO disqualificationDTO)
+        {
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            await _tournamentService.DisqualifyPlayer(disqualificationDTO, userId);
+
+            return Ok("Se descalificó al jugador");
+        }
+
+
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [HttpPost("{tournamentId}/cancel")]
+        public async Task<IActionResult> CancelTournament(int tournamentId)
+        {
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            // llamar al service
+
+            return Ok("El torneo fue cancelado exitosamente");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // ESTE METODO ESTA EXPUESTO PARA PROBARLO UNICAMENTE
         [HttpGet("max-players/{tournamentId}")]
