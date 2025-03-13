@@ -156,6 +156,52 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+
+        public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
+        {
+            string query = @"INSERT INTO decks_cards (deckId, cardId) VALUES (@DeckId, @CardId);";
+
+            if (cardIds == null || !cardIds.Any())
+            {
+                throw new ArgumentException("La lista de cartas no puede estar vacía.");
+            }
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            int totalInserted = await connection.ExecuteAsync(query,
+                                cardIds.Select(cardId => new { DeckId = deckId, CardId = cardId }),
+                                transaction
+                            );
+
+                            transaction.Commit();
+                            return totalInserted > 0;
+                        }
+                        catch (MySqlException ex)
+                        {
+                            transaction.Rollback();
+                            if (ex.Number == 1062)
+                            {
+                                throw new DatabaseException("Una o más cartas ya están en el mazo.", ex);
+                            }
+                            throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
+
+
         public async Task<bool> RemoveCardFromDeck(int cardId, int deckId)
         {
             string query = @"DELETE FROM collections WHERE playerId = @PlayerId AND deckId = @DeckId;";

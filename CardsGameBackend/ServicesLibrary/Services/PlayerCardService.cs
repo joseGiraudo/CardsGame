@@ -38,16 +38,19 @@ namespace ServicesLibrary.Services
             return false;
         }
 
-        public async Task<bool> AssignCardToDeck(int cardId, int deckId)
+        public async Task<bool> AssignCardToDeck(List<int> cardIds, int deckId)
         {
+            if(cardIds.Count > 15)
+                throw new Exception("El mazo solo puede contener 15 cartas.");
+
             if (await _playerCardDAO.GetDeckCardsQuantity(deckId) >= 15)
                 throw new Exception("No se pueden agregar mas cartas al mazo.");
 
-            if (await _playerCardDAO.AssignCardToDeck(cardId, deckId))
+            foreach (var cardId in cardIds)
             {
-                return true;
+                await _playerCardDAO.AssignCardToDeck(cardId, deckId);
             }
-            return false;
+            return true;
         }
 
         public async Task<bool> RemoveCardFromDeck(int cardId, int deckId)

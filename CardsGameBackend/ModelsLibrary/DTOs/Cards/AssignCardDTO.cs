@@ -8,6 +8,6 @@ namespace ModelsLibrary.DTOs.Cards
 {
     public class AssignCardDTO
     {
-        public int CardId { get; set; }
+        public List<int> CardIds { get; set; }
     }
 }

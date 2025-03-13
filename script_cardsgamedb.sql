@@ -26,13 +26,16 @@ CREATE TABLE users (
 );
 
 INSERT INTO countries (NAME) VALUES('ARG');
+INSERT INTO countries (NAME) VALUES('URU');
+INSERT INTO countries (NAME) VALUES('CHI');
+INSERT INTO countries (NAME) VALUES('BR');
+INSERT INTO countries (NAME) VALUES('BOL');
 
 INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
- 
+ VALUES ('Admin', 'admin', 'admin@correo.com', 'admin123', 1, 'https://example.com/avatar.png', 'Admin', NULL);
  
 INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('Admin', 'admin', 'admin@correo.com', 'admin123', 1, 'https://example.com/avatar.png', 'Admin', NULL);
+ VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
 
  -- SELECT * FROM users;
  -- SELECT * FROM countries;
@@ -41,6 +44,18 @@ INSERT INTO users (name, username, email, password, countryId, avatar, role, cre
  -- SELECT * FROM decks_cards; 
  -- SELECT * FROM series;
  -- SELECT * FROM cards_series; 
+ 
+ 
+ 
+ /*
+ -- Metodo para obtener las cartas permitidas en un torneo
+ SELECT DISTINCT c.id, c.name
+FROM cards c
+JOIN cards_series cs ON c.id = cs.cardId
+JOIN tournament_series ts ON cs.seriesId = ts.seriesId
+WHERE ts.tournamentId = 3
+ORDER BY c.id;
+*/
  
 -- Tabla de cartas
 CREATE TABLE cards (

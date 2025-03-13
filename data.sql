@@ -118,6 +118,7 @@ INSERT INTO series (name, releaseDate) VALUES ('Frost Kingdom', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('Inferno Lords', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('Celestial Order', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('Tribal Warriors', '2025-03-03');
+INSERT INTO series (name, releaseDate) VALUES ('First 20', '2025-03-03');
 
 SELECT * FROM series;
 
@@ -198,4 +199,68 @@ INSERT INTO cards_series (cardId, seriesId) VALUES (80, 10); -- Forest Guardian
 INSERT INTO cards_series (cardId, seriesId) VALUES (93, 10); -- Tribal Shaman
 INSERT INTO cards_series (cardId, seriesId) VALUES (95, 10); -- Toxic Scorpion
 
+-- serie con las primer 20 cartas
+INSERT INTO cards_series (cardId, seriesId) VALUES (1, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (2, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (3, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (4, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (5, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (6, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (7, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (8, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (9, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (10, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (11, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (12, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (13, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (14, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (15, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (16, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (17, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (18, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (19, 11);
+INSERT INTO cards_series (cardId, seriesId) VALUES (20, 11);
+
 SELECT * FROM cards_series;
+
+
+-- creo los mazos para cada player del 1 al 20
+
+INSERT INTO decks (playerId, name) VALUES (, 'deck 1');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 2');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 3');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 4');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 5');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 6');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 7');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 8');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 9');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 10');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 11');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 12');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 13');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 14');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 15');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 16');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 17');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 18');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 19');
+INSERT INTO decks (playerId, name) VALUES (, 'deck 20');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
