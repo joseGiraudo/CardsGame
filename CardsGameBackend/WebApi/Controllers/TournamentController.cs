@@ -56,8 +56,8 @@ namespace WebApi.Controllers
         }
 
         [Authorize(Roles = nameof(UserRole.Player))]
-        [HttpPost("{tournamentId}/register/{deckId}")]
-        public async Task<IActionResult> TournamentRegistration(int tournamentId, int deckId)
+        [HttpPost("{tournamentId}/register")]
+        public async Task<IActionResult> TournamentRegistration(int tournamentId, [FromBody] TournamentRegistrationDTO registrationDTO)
         {
             string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -66,7 +66,7 @@ namespace WebApi.Controllers
                 return Unauthorized(); // Retorna 401 si el usuario no está autenticado
             }
 
-            await _tournamentService.RegisterPlayer(tournamentId, userId, deckId);
+            await _tournamentService.RegisterPlayer(tournamentId, userId, registrationDTO.DeckId);
 
             return Ok("Registro exitoso");
         }
@@ -98,7 +98,7 @@ namespace WebApi.Controllers
 
 
         [Authorize(Roles = nameof(UserRole.Admin))]
-        [HttpPost("{tournamentId}/cancel")]
+        [HttpPut("{tournamentId}/cancel")]
         public async Task<IActionResult> CancelTournament(int tournamentId)
         {
             string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -113,6 +113,22 @@ namespace WebApi.Controllers
             return Ok("El torneo fue cancelado exitosamente");
         }
 
+
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        [HttpPut("{tournamentId}/phase")]
+        public async Task<IActionResult> AdvanceTournamentPhase(int tournamentId)
+        {
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            await _tournamentService.AdvanceTournamentPhase(tournamentId);
+
+            return Ok("El torneo avanzó a la siguiente fase exitosamente.");
+        }
 
 
 
