@@ -74,11 +74,11 @@ namespace WebApi.Controllers
             {
                 var (playerId, playerRole) = GetCurrentUserData();
 
-                if (await _playerCardService.AssignCardToDeck(cardDTO.CardId, deckId))
+                if (await _playerCardService.AssignCardsToDeck(cardDTO.CardIds, deckId))
                 {
-                    return Ok("Carta asignada correctamente");
+                    return Ok("Cartas asignadas correctamente");
                 }
-                return BadRequest("No se pudo asignar la carta al mazo");
+                return BadRequest("No se pudieron asignar las cartas al mazo");
 
 
             }
@@ -91,9 +91,6 @@ namespace WebApi.Controllers
                 return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
         }
-
-
-        // endpoints para crear un mazo
 
     }
 }

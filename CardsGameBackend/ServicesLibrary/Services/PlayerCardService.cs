@@ -38,7 +38,7 @@ namespace ServicesLibrary.Services
             return false;
         }
 
-        public async Task<bool> AssignCardToDeck(List<int> cardIds, int deckId)
+        public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
         {
             if(cardIds.Count > 15)
                 throw new Exception("El mazo solo puede contener 15 cartas.");
