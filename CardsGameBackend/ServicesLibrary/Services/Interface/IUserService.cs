@@ -12,6 +12,7 @@ namespace ServicesLibrary.Services.Interface
     public interface IUserService
     {
         public Task<List<User>> GetAll();
+        public Task<User> GetById(int id, int userId, UserRole userRole);
         public Task<User> GetById(int id);
         public Task<User> GetByEmail(string email);
         public Task<User> CreateUser(UserDTO userDTO, int? creatorId, UserRole? creatorRole);

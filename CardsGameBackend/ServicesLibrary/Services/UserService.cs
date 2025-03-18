@@ -68,12 +68,32 @@ namespace ServicesLibrary.Services
             }
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<User> GetById(int id, int userId, UserRole userRole)
         {
             try
             {
                 var user = await _userDAO.GetById(id);
 
+                if((userRole == UserRole.Player || userRole == UserRole.Judge) && userId != user.Id)
+                {
+                    user.Name = null;
+                    user.Email = null;
+                    // ver si así esta bien
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<User> GetById(int id)
+        {
+            try
+            {
+                var user = await _userDAO.GetById(id);
                 return user;
             }
             catch (Exception ex)

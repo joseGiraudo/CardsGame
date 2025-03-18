@@ -47,9 +47,23 @@ namespace WebApi.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAllCards(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            return Ok();
+            try
+            {
+                var (userId, userRole) = GetCurrentUserData();
+                var user = await _userService.GetById(id, userId, userRole);
+
+                return Ok(user);
+            }
+            catch (UnauthorizedRoleException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
+            catch (UserException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
         }
 
         // dejo eso así junto? o armo otro meteod para registrarse que lo usen unicamente jugadores?
