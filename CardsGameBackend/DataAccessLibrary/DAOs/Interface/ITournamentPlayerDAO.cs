@@ -10,7 +10,7 @@ namespace DataAccessLibrary.DAOs.Interface
     public interface ITournamentPlayerDAO
     {
         public Task<bool> RegisterPlayerAsync(int tournamentId, int playerId, int deckId);
-        public Task<List<TournamentPlayer>> GetTournamentPlayersAsync(int tournamentId);
+        public Task<List<int>> GetTournamentPlayersAsync(int tournamentId);
         public Task<List<int>> GetWinnersAsync(int tournamentId);
         public Task<bool> RegisterJudgeAsync(int tournamentId, int judgeId);
         Task<bool> CheckCardsSeries(int deckId, int tournamentId);

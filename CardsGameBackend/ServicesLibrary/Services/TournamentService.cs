@@ -113,7 +113,7 @@ namespace ServicesLibrary.Services
             // primero reviso que haya cupo
             int maxPlayers = CalculateMaxPlayers(tournament.StartDate, tournament.EndDate);
 
-            List<TournamentPlayer> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
+            List<int> playersRegistered = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournamentId);
             
             if(playersRegistered.Count() >= maxPlayers)
                 throw new RegistrationClosedException("Cupo del torneo completado. No se admiten mas jugadors");
@@ -121,6 +121,7 @@ namespace ServicesLibrary.Services
             // validacions del deck
             if (deckId <= 0)
                 throw new InvalidDeckException("Debes seleccionar un amzo para el torneo");
+
             // revisar que el mazo este permitido
             var invalidCards = await _tournamentPlayerDAO.GetInvalidCards(deckId, tournamentId);
 
@@ -193,7 +194,7 @@ namespace ServicesLibrary.Services
             // priemro revisar que haya lista de jueces y series de cartas habilitadas
 
             // obtengo los jugadores registrados
-            var playersIds = await _tournamentPlayerDAO.GetWinnersAsync(tournament.Id);
+            var playersIds = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
 
             if (playersIds.Count < 2)
                 throw new InvalidOperationException("No hay suficientes jugadores para comenzar el torneo");
@@ -378,12 +379,12 @@ namespace ServicesLibrary.Services
         private async Task<bool> CheckDeckInSeries(int deckId, int seriesId)
         {
             // este metodo debe obtener las cartas del deck y chequear que esten en la serie de cartas permitida
-            List<int> cardsIds = await _playerCardDAO.GetCardsByDeckId(deckId);
+            var cards = await _playerCardDAO.GetCardsByDeckId(deckId);
 
-            foreach (int cardId in cardsIds)
+            foreach (Card card in cards.ToList())
             {
 
-                bool exists = await _seriesDAO.CheckCardInSeries(cardId, seriesId);
+                bool exists = await _seriesDAO.CheckCardInSeries(card.Id, seriesId);
                 if (!exists)
                 {
                     return false;

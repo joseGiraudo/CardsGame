@@ -63,15 +63,15 @@ namespace DataAccessLibrary.DAOs
 
 
         // falta un metodo para traer a todos los jugadores y sus mazos correspondientes a un torneo
-        public async Task<List<TournamentPlayer>> GetTournamentPlayersAsync(int tournamentId)
+        public async Task<List<int>> GetTournamentPlayersAsync(int tournamentId)
         {
-            string query = @"SELECT * FROM tournament_players WHERE tournamentId = @TournamentId;";
+            string query = @"SELECT playerId FROM tournament_players WHERE tournamentId = @TournamentId;";
 
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
-                    var players = await connection.QueryAsync<TournamentPlayer>(query, new
+                    var players = await connection.QueryAsync<int>(query, new
                     {
                         TournamentId = tournamentId
                     });

@@ -231,6 +231,20 @@ SELECT * FROM cards_series;
 -- creo los players a traves de postman
 
 
+
+-- creo las collections de cada player
+
+INSERT INTO collections (playerId, cardId) VALUES (8, 1);
+INSERT INTO collections (playerId, cardId) VALUES (8, 2);
+INSERT INTO collections (playerId, cardId) VALUES (8, 3);
+INSERT INTO collections (playerId, cardId) VALUES (8, 4);
+INSERT INTO collections (playerId, cardId) VALUES (8, 5);
+
+SELECT * FROM collections;
+
+
+
+
 -- creo los mazos para cada player del 1 al 20
 
 INSERT INTO decks (playerId, name) VALUES (8, 'deck 1');
@@ -263,14 +277,14 @@ SELECT * FROM users WHERE ROLE = 'Player';
 
 SELECT * FROM decks_cards;
 
+SELECT * FROM tournaments;
 
-SELECT * FROM collections;
+SELECT * FROM tournament_players;
 
-INSERT INTO collections (playerId, cardId) VALUES (8, 1);
-INSERT INTO collections (playerId, cardId) VALUES (8, 2);
-INSERT INTO collections (playerId, cardId) VALUES (8, 3);
-INSERT INTO collections (playerId, cardId) VALUES (8, 4);
-INSERT INTO collections (playerId, cardId) VALUES (8, 5);
+SELECT * FROM games;
+ 
+
+
 
 
 
