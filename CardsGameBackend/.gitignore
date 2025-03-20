@@ -10,6 +10,3 @@ obj/
 .idea/
 .vscode/
 
-# ASP.NET files
-appsettings.json
-appsettings.Development.json
