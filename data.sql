@@ -3,6 +3,7 @@
 
 USE cardsgamedb;
 
+-- 100 cards
 INSERT INTO cards (name, attack, defense, illustration) VALUES ('Dragon Guardian', 85, 95, 'dragon_guardian.jpg');
 INSERT INTO cards (name, attack, defense, illustration) VALUES ('Shadow Assassin', 90, 40, 'shadow_assassin.jpg');
 INSERT INTO cards (name, attack, defense, illustration) VALUES ('Elven Archer', 65, 50, 'elven_archer.jpg');
@@ -106,8 +107,9 @@ INSERT INTO cards (name, attack, defense, illustration) VALUES ('Obsidian Golem'
 
 SELECT * FROM cards;
 
+DELETE FROM cards WHERE id > 100;
 
-
+-- 11 series
 INSERT INTO series (name, releaseDate) VALUES ('Elemental Masters', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('Shadow Realm', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('Knights of Valor', '2025-03-03');
@@ -121,6 +123,8 @@ INSERT INTO series (name, releaseDate) VALUES ('Tribal Warriors', '2025-03-03');
 INSERT INTO series (name, releaseDate) VALUES ('First 20', '2025-03-03');
 
 SELECT * FROM series;
+
+DELETE FROM series WHERE id > 11;
 
 
 -- Elemental Masters (id: 1)
@@ -224,36 +228,49 @@ INSERT INTO cards_series (cardId, seriesId) VALUES (20, 11);
 SELECT * FROM cards_series;
 
 
+-- creo los players a traves de postman
+
+
 -- creo los mazos para cada player del 1 al 20
 
-INSERT INTO decks (playerId, name) VALUES (, 'deck 1');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 2');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 3');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 4');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 5');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 6');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 7');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 8');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 9');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 10');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 11');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 12');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 13');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 14');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 15');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 16');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 17');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 18');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 19');
-INSERT INTO decks (playerId, name) VALUES (, 'deck 20');
+INSERT INTO decks (playerId, name) VALUES (8, 'deck 1');
+INSERT INTO decks (playerId, name) VALUES (9, 'deck 2');
+INSERT INTO decks (playerId, name) VALUES (10, 'deck 3');
+INSERT INTO decks (playerId, name) VALUES (11, 'deck 4');
+INSERT INTO decks (playerId, name) VALUES (12, 'deck 5');
+INSERT INTO decks (playerId, name) VALUES (13, 'deck 6');
+INSERT INTO decks (playerId, name) VALUES (14, 'deck 7');
+INSERT INTO decks (playerId, name) VALUES (15, 'deck 8');
+INSERT INTO decks (playerId, name) VALUES (16, 'deck 9');
+INSERT INTO decks (playerId, name) VALUES (17, 'deck 10');
+INSERT INTO decks (playerId, name) VALUES (18, 'deck 11');
+INSERT INTO decks (playerId, name) VALUES (19, 'deck 12');
+INSERT INTO decks (playerId, name) VALUES (20, 'deck 13');
+INSERT INTO decks (playerId, name) VALUES (21, 'deck 14');
+INSERT INTO decks (playerId, name) VALUES (22, 'deck 15');
+INSERT INTO decks (playerId, name) VALUES (23, 'deck 16');
+INSERT INTO decks (playerId, name) VALUES (24, 'deck 17');
+INSERT INTO decks (playerId, name) VALUES (25, 'deck 18');
+INSERT INTO decks (playerId, name) VALUES (26, 'deck 19');
+INSERT INTO decks (playerId, name) VALUES (27, 'deck 20');
+
+SELECT * FROM decks;
 
 
+-- tengo que cargar las cards en los decks
+
+SELECT * FROM users WHERE ROLE = 'Player';
+
+SELECT * FROM decks_cards;
 
 
+SELECT * FROM collections;
 
-
-
-
+INSERT INTO collections (playerId, cardId) VALUES (8, 1);
+INSERT INTO collections (playerId, cardId) VALUES (8, 2);
+INSERT INTO collections (playerId, cardId) VALUES (8, 3);
+INSERT INTO collections (playerId, cardId) VALUES (8, 4);
+INSERT INTO collections (playerId, cardId) VALUES (8, 5);
 
 
 

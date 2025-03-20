@@ -10,6 +10,7 @@ namespace DataAccessLibrary.DAOs.Interface
 {
     public interface IPlayerCardDAO
     {
+        public Task<IEnumerable<Card>> GetPlayerCollection(int playerId);
         public Task<bool> AssignCardToCollection(int cardId, int playerId);
         public Task<bool> RemoveCardFromCollection(int cardId, int playerId);
         public Task<bool> CreateDeck(string name, int playerId);

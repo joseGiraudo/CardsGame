@@ -36,6 +36,13 @@ namespace WebApi.Controllers
             return (userId, role);
         }
 
+        [HttpGet("{playerId}/collection")]
+        public async Task<IActionResult> GetPlayerCollection(int playerId)
+        {
+            var cards = await _playerCardService.GetPlayerCollection(playerId);
+            return Ok(cards);
+        }
+
         [Authorize(Roles = nameof(UserRole.Player))]
         [HttpPost]
         public async Task<IActionResult> CreateDeck([FromBody] CreateDeckDTO createDeckDto)

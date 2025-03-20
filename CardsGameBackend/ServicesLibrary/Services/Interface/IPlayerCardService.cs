@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ModelsLibrary.Models;
 
 namespace ServicesLibrary.Services.Interface
 {
     public interface IPlayerCardService
     {
-
+        public Task<List<Card>> GetPlayerCollection(int playerId);
         public Task<bool> AssignCardToCollection(int cardId, int playerId);
         public Task<bool> RemoveCardFromCollection(int cardId, int playerId);
         public Task<bool> CreateDeck(string name, int playerId);

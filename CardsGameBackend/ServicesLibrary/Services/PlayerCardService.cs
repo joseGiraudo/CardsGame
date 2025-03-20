@@ -18,6 +18,18 @@ namespace ServicesLibrary.Services
             _playerCardDAO = playerCardDAO;
         }
 
+        public async Task<List<Card>> GetPlayerCollection(int playerId)
+        {
+            if (playerId <= 0)
+            {
+                throw new ArgumentException("El ID del jugador debe ser mayor a 0.", nameof(playerId));
+            }
+
+            var cards = await _playerCardDAO.GetPlayerCollection(playerId);
+
+            return cards.ToList();
+        }
+
         public async Task<bool> AssignCardToCollection(int cardId, int playerId)
         {
             // tengo que verificar que la carta exista?

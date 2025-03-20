@@ -23,6 +23,32 @@ namespace DataAccessLibrary.DAOs
         }
 
 
+        public async Task<IEnumerable<Card>> GetPlayerCollection(int playerId)
+        {
+            string query = @"SELECT c.id, c.name, c.attack, c.defense, c.illustration
+                            FROM cards c
+                            JOIN collections cl on c.id = cl.cardId
+                            WHERE cl.playerId = @PlayerId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var cards = await connection.QueryAsync<Card>(query, new { PlayerId = playerId});
+
+                    return cards;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
+            }
+        }
         public async Task<bool> AssignCardToCollection(int cardId, int playerId)
         {
             string query = @"INSERT INTO collections (playerId, cardId) " +
