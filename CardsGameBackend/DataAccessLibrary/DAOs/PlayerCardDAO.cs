@@ -272,17 +272,20 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
-        public async Task<List<int>> GetCardsByDeckId(int deckId)
+        public async Task<IEnumerable<Card>> GetCardsByDeckId(int deckId)
         {
-            string query = @"SELECT cardId FROM deck_cards WHERE deckId = @DeckId";
+            string query = @"SELECT c.id, c.name, c.attack, c.defense, c.illustration
+                            FROM cards c
+                            JOIN deck_cards dc on c.id = dc.cardId
+                            WHERE dc.deckId = @DeckId";
 
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    List<int> cardsIds = (await connection.QueryAsync<int>(query, new { DeckId = deckId })).ToList();
-                    return cardsIds;
+                    var cards = await connection.QueryAsync<Card>(query, new { DeckId = deckId });
+                    return cards;
                 }
             }
             catch (MySqlException ex)

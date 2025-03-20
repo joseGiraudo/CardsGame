@@ -17,7 +17,7 @@ namespace ServicesLibrary.Services.Interface
         public Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId);
         public Task<bool> RemoveCardFromDeck(int cardId, int deckId);
         public Task<int> GetDeckCardsQuantity(int deckId);
-        public Task<List<int>> GetCardsByDeckId(int deckId);
+        public Task<List<Card>> GetCardsByDeckId(int deckId);
 
     }
 }

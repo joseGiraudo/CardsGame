@@ -52,7 +52,11 @@ namespace ServicesLibrary.Services
 
         public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
         {
-            if(cardIds.Count > 15)
+
+            // tengo que controlar que las cartas pertenezcan a la coleccion del player?
+
+
+            if(cardIds.Count != 15)
                 throw new Exception("El mazo solo puede contener 15 cartas.");
 
             if (await _playerCardDAO.GetDeckCardsQuantity(deckId) >= 15)
@@ -97,9 +101,16 @@ namespace ServicesLibrary.Services
             return await _playerCardDAO.GetDeckCardsQuantity(deckId);
         }
 
-        public async Task<List<int>> GetCardsByDeckId(int deckId)
+        public async Task<List<Card>> GetCardsByDeckId(int deckId)
         {
-            throw new NotImplementedException();
+            if (deckId <= 0)
+            {
+                throw new ArgumentException("El ID del mazo debe ser mayor a 0.", nameof(deckId));
+            }
+
+            var cards = await _playerCardDAO.GetCardsByDeckId(deckId);
+
+            return cards.ToList();
         }
     }
 }
