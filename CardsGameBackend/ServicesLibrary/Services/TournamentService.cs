@@ -246,6 +246,15 @@ namespace ServicesLibrary.Services
             } else
             {
                 currentDate = lastGameDate.Value;
+
+                if (currentDate.AddMinutes(30).TimeOfDay <= tournament.EndDate.TimeOfDay)
+                {
+                    currentDate = currentDate.AddMinutes(30);
+                }
+                else
+                {
+                    currentDate = currentDate.Date.AddDays(1).Add(tournament.StartDate.TimeOfDay);
+                }
             }
             
 
