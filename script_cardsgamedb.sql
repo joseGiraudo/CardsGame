@@ -190,18 +190,19 @@ CREATE TABLE refresh_tokens (
 /*
 
 -- Select para obtener los jugadores invistos de un torneo
-SELECT DISTINCT u.id, u.name
+SELECT DISTINCT u.id
 FROM users u
-JOIN games g ON u.id = g.player1 OR u.id = g.player2
-WHERE g.tournamentId = @tournamentId
+JOIN games g ON u.id = g.player1 OR (u.id = g.player2 AND g.player2 IS NOT NULL)
+WHERE g.tournamentId = @TournamentId
 AND u.id NOT IN (
-    SELECT DISTINCT CASE 
-        WHEN g.player1 != g.winnerId THEN g.player1
-        WHEN g.player2 != g.winnerId THEN g.player2
-    END
-    FROM games g
-    WHERE g.tournamentId = @tournamentId
-    AND g.winnerId IS NOT NULL
+  SELECT DISTINCT CASE 
+      WHEN g.player1 != g.winnerId THEN g.player1
+      WHEN g.player2 IS NOT NULL AND g.player2 != g.winnerId THEN g.player2
+  END
+  FROM games g
+  WHERE g.tournamentId = @TournamentId
+  AND g.winnerId IS NOT NULL
+  AND (g.player1 != g.winnerId OR (g.player2 IS NOT NULL AND g.player2 != g.winnerId)) -- Evita NULLs
 );
 
 -- Consulta para saber si todas las cartas de un mazo pertenecen

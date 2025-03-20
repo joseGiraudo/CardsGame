@@ -135,7 +135,7 @@ namespace DataAccessLibrary.DAOs
                 {
                     await connection.ExecuteAsync(query, new
                     {
-                        Phase = tournament.Phase,
+                        Phase = tournament.Phase.ToString(),
                         WinnerId = tournament.WinnerId,
                         Id = tournament.Id
                     });
@@ -143,11 +143,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al actualizar el torneo: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al actualizar el torneo", ex);
             }
         }
 
