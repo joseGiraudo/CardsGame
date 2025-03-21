@@ -120,7 +120,7 @@ namespace ServicesLibrary.Services
 
             // validacions del deck
             if (deckId <= 0)
-                throw new InvalidDeckException("Debes seleccionar un amzo para el torneo");
+                throw new InvalidDeckException("Debes seleccionar un mazo para el torneo");
 
             // revisar que el mazo este permitido
             var invalidCards = await _tournamentPlayerDAO.GetInvalidCards(deckId, tournamentId);
@@ -191,7 +191,7 @@ namespace ServicesLibrary.Services
 
         private async Task StartTournament(Tournament tournament)
         {
-            // priemro revisar que haya lista de jueces y series de cartas habilitadas
+            // TODO: priemro revisar que haya lista de jueces y series de cartas habilitadas
 
             // obtengo los jugadores registrados
             var playersIds = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);
@@ -264,8 +264,8 @@ namespace ServicesLibrary.Services
                 var game = new Game
                 {
                     TournamentId = tournament.Id,
-                    Player1Id = lastPlayer,
-                    Player2Id = null, // ver si admito valores null para el player 2 o como manejarlo
+                    Player1 = lastPlayer,
+                    Player2 = null, // ver si admito valores null para el player 2 o como manejarlo
                     WinnerId = lastPlayer,
                     StartDate = null
                 };
@@ -286,8 +286,8 @@ namespace ServicesLibrary.Services
                 var game = new Game
                 {
                     TournamentId = tournament.Id,
-                    Player1Id = playersShuffled[i],
-                    Player2Id = playersShuffled[i + 1],
+                    Player1 = playersShuffled[i],
+                    Player2 = playersShuffled[i + 1],
                     WinnerId = null,
                     StartDate = currentDate,
                 };

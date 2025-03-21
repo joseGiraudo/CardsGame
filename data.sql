@@ -279,6 +279,10 @@ SELECT * FROM decks_cards;
 
 SELECT * FROM tournaments;
 
+SELECT * FROM tournament_judges;
+
+SELECT * FROM users;
+
 SELECT * FROM tournament_players;
 
 SELECT * FROM games;
@@ -286,7 +290,7 @@ SELECT * FROM games;
 -- DELETE FROM games;
  
 -- UPDATE tournaments SET PHASE = 'Registration', winnerId = null WHERE id = 1;
-
+-- UPDATE games SET winnerId = NULL WHERE id = 52;
 
 SELECT DISTINCT u.id
 FROM users u

@@ -35,10 +35,10 @@ namespace DataAccessLibrary.DAOs
                     var gameId = await connection.ExecuteScalarAsync<int>(query, new
                     {
                         tournamentId = game.TournamentId,
-                        startDate = game.Player2Id == null ? (DateTime?)null : game.StartDate, // No asigna fecha a byes
-                        player1 = game.Player1Id,
-                        player2 = game.Player2Id,
-                        winnerId = game.Player2Id == null ? game.Player1Id : (int?)null // Si es bye, gana automáticamente
+                        startDate = game.Player2 == null ? (DateTime?)null : game.StartDate, // No asigna fecha a byes
+                        player1 = game.Player1,
+                        player2 = game.Player2,
+                        winnerId = game.Player2 == null ? game.Player1 : (int?)null // Si es bye, gana automáticamente
                     });
 
                     return gameId;

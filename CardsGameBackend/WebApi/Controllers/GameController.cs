@@ -48,7 +48,7 @@ namespace WebApi.Controllers
 
         [Authorize(Roles = nameof(UserRole.Judge))]
         [HttpPost("{id}/finalize")]
-        public async Task<IActionResult> FinalizeGame([FromBody] int winnerId, int id)
+        public async Task<IActionResult> FinalizeGame([FromBody] FinalizeGameDTO finalizeGameDTO, int id)
         {
             // Obtener el ID del usuario logueado desde los claims del token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -58,7 +58,7 @@ namespace WebApi.Controllers
                 return Unauthorized("No se pudo obtener el ID del juez.");
             }
 
-            if (await _gameService.FinalizeGame(id, winnerId, judgeId))
+            if (await _gameService.FinalizeGame(id, finalizeGameDTO.WinnerId, judgeId))
                 return Ok("Partida oficializada correctamente");
 
             return BadRequest("No se pudo oficializar la partida");

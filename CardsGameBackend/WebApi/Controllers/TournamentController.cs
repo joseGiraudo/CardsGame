@@ -55,6 +55,26 @@ namespace WebApi.Controllers
             return Ok(tournament);
         }
 
+        [Authorize(Roles = nameof(UserRole.Organizer))]
+        [HttpPost("{tournamentId}/assign-judge")]
+        public async Task<IActionResult> AssignJudges([FromBody] AssignJudgesDTO judgesDTO, int tournamentId)
+        {
+
+            string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+            {
+                return Unauthorized(); // Retorna 401 si el usuario no está autenticado
+            }
+
+            foreach (var judgeId in judgesDTO.JudgeIds)
+            {
+                await _tournamentService.AssignJudgeToTournament(tournamentId, judgeId);
+            }
+
+            return Ok("Jueces asignados correctamente");
+        }
+
         [Authorize(Roles = nameof(UserRole.Player))]
         [HttpPost("{tournamentId}/register")]
         public async Task<IActionResult> TournamentRegistration(int tournamentId, [FromBody] TournamentRegistrationDTO registrationDTO)

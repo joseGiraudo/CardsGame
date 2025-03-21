@@ -49,16 +49,19 @@ namespace ServicesLibrary.Services
             if(game.StartDate < DateTime.UtcNow)
                 throw new Exception("El juego no comenzo");
 
-            if (game.Player1Id == winnerId)
+            if (game.Player1 == winnerId)
             {
                 game.WinnerId = winnerId;
-            } else if (game.Player2Id == winnerId) 
+            } else if (game.Player2 == winnerId) 
             {
                 game.WinnerId = winnerId;
             } else
             {
                 throw new InconsistentException("El id de ganador no se encentra en esta partida");
             }
+
+            // tengo que verificar si es el ultimo partido de la ronda y crear la siguiente ronda de partidos
+
 
             return await _gameDAO.SetGameWinner(gameId, winnerId);
 
