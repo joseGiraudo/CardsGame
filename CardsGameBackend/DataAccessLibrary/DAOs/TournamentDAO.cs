@@ -125,6 +125,30 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<bool> GetTournamentJudges(int tournamentId)
+        {
+            string query = "SELECT COUNT(judgeId) FROM tournament_judges WHERE tournamentId = @TournamentId";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var judges = await connection.ExecuteScalarAsync<int>(query, new { TournamentId = tournamentId });
+
+                    return judges > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+            }
+        }
+
         public async Task UpdateAsync(Tournament tournament)
         {
             string query = "UPDATE tournaments SET phase = @Phase, winnerId = @WinnerId " +

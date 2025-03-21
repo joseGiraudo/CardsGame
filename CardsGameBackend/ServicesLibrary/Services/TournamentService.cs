@@ -192,6 +192,10 @@ namespace ServicesLibrary.Services
         private async Task StartTournament(Tournament tournament)
         {
             // TODO: priemro revisar que haya lista de jueces y series de cartas habilitadas
+            if(!await _tournamentDAO.GetTournamentJudges(tournament.Id))
+            {
+                throw new JudgesNotFoundException();
+            }
 
             // obtengo los jugadores registrados
             var playersIds = await _tournamentPlayerDAO.GetTournamentPlayersAsync(tournament.Id);

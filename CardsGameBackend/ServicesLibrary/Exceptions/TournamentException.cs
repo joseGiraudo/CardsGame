@@ -44,6 +44,11 @@ namespace ServicesLibrary.Exceptions
         public RegistrationClosedException(string message = "No hay más cupos disponibles para el torneo.")
             : base(message, 409) { }
     }
+    public class JudgesNotFoundException : TournamentException
+    {
+        public JudgesNotFoundException(string message = "No se encontraron jueces asignados al torneo.")
+            : base(message, 400) { }
+    }
 
     public class InvalidPlayerException : TournamentException
     {
