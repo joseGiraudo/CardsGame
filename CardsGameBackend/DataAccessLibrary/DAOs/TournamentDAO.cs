@@ -237,5 +237,29 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+        public async Task<bool> CheckRoundFinished(int tournamentId)
+        {
+            string query = "SELECT COUNT(id) FROM games WHERE tournamentId = @TournamentId AND winnerId != NULL;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var games = await connection.ExecuteScalarAsync<int>(query, new { TournamentId = tournamentId });
+
+                    return games > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+            }
+        }
+
     }
 }

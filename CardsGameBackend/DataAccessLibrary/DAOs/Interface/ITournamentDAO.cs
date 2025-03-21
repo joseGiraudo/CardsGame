@@ -18,5 +18,6 @@ namespace DataAccessLibrary.DAOs.Interface
         Task<IEnumerable<Tournament>> GetByPhaseAsync(TournamentPhase phase);
         public Task<bool> GetTournamentJudges(int tournamentId);
         Task<bool> DisqualifyPlayer(Disqualification disqualification);
+        public Task<bool> CheckRoundFinished(int tournamentId);
     }
 }

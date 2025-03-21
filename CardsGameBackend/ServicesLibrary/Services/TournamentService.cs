@@ -191,7 +191,6 @@ namespace ServicesLibrary.Services
 
         private async Task StartTournament(Tournament tournament)
         {
-            // TODO: priemro revisar que haya lista de jueces y series de cartas habilitadas
             if(!await _tournamentDAO.GetTournamentJudges(tournament.Id))
             {
                 throw new JudgesNotFoundException();
@@ -203,7 +202,6 @@ namespace ServicesLibrary.Services
             if (playersIds.Count < 2)
                 throw new InvalidOperationException("No hay suficientes jugadores para comenzar el torneo");
 
-            // TODO: validar que haya jueces asignados al torneo
 
             // Creo una ronda de partidos
             await CreateNextRoundGames(tournament, playersIds);

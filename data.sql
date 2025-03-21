@@ -287,6 +287,7 @@ SELECT * FROM tournament_players;
 
 SELECT * FROM games;
 
+
 -- DELETE FROM games;
  
 -- UPDATE tournaments SET PHASE = 'Registration', winnerId = null WHERE id = 1;
