@@ -43,20 +43,7 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                // Manejar errores específicos de MySQL
-                switch (ex.Number)
-                {
-                    case 1062: // Duplicate entry
-                        throw new DatabaseException($"Ya existe una carta con el nombre {card.Name}", ex);
-                    case 1452: // Foreign key constraint fails
-                        throw new DatabaseException("Error de referencia en la base de datos", ex);
-                    case 1042: // Unable to connect
-                        throw new DatabaseException("Error de conexión con la base de datos", ex);
-                    case 1043: // Bad handshake
-                        throw new DatabaseException("Error de conexión con la base de datos", ex);
-                    default:
-                        throw new DatabaseException($"Error al crear la carta: {ex.Message}", ex);
-                }
+                throw new DatabaseException($"Error al crear la carta: {ex.Message}", ex);
             }
             catch (Exception ex)
             {

@@ -52,11 +52,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al crear el torneo: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado  al crear el torneo", ex);
             }
         }
 
@@ -90,11 +90,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al obtener los torneos: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al obtener los torneos", ex);
             }
         }
 
@@ -117,11 +117,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al obtener el torneo: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al obtener el torneo", ex);
             }
         }
 
@@ -141,11 +141,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al obtener los jueces del torneo: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al obtener los jueces del torneo", ex);
             }
         }
 
@@ -195,11 +195,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al obtener los torneos: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al obtener los torneos", ex);
             }
         }
 
@@ -253,11 +253,11 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                throw new DatabaseException($"Error al actualizar la carta: {ex.Message}", ex);
+                throw new DatabaseException($"Error al obtener los partidos no finalizados: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Error inesperado al actualizar la carta", ex);
+                throw new DatabaseException("Error inesperado al obtener los partidos no finalizados", ex);
             }
         }
 
