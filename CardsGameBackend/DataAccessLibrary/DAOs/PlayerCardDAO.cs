@@ -49,6 +49,7 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
+
         public async Task<bool> AssignCardToCollection(int cardId, int playerId)
         {
             string query = @"INSERT INTO collections (playerId, cardId) " +
@@ -199,8 +200,6 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
         {
-            string query = @"INSERT INTO decks_cards (deckId, cardId) VALUES (@DeckId, @CardId);";
-
             if (cardIds == null || !cardIds.Any())
             {
                 throw new ArgumentException("La lista de cartas no puede estar vacía.");
@@ -211,25 +210,29 @@ namespace DataAccessLibrary.DAOs
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    using (var transaction = connection.BeginTransaction())
+                    using (var transaction = await connection.BeginTransactionAsync())
                     {
                         try
                         {
-                            int totalInserted = await connection.ExecuteAsync(query,
+                            // primero elimino las cartas que tenga asociadas el mazo
+                            string deleteQuery = "DELETE FROM decks_cards WHERE deckId = @DeckId;";
+                            await connection.ExecuteAsync(deleteQuery, new { DeckId = deckId }, transaction);
+
+
+                            // agrego las nuevas cartas al mazo
+                            string insertQuery = @"INSERT INTO decks_cards (deckId, cardId) VALUES (@DeckId, @CardId);";
+
+                            int totalInserted = await connection.ExecuteAsync(insertQuery,
                                 cardIds.Select(cardId => new { DeckId = deckId, CardId = cardId }),
                                 transaction
                             );
 
-                            transaction.Commit();
+                            await transaction.CommitAsync();
                             return totalInserted > 0;
                         }
                         catch (MySqlException ex)
                         {
-                            transaction.Rollback();
-                            if (ex.Number == 1062)
-                            {
-                                throw new DatabaseException("Una o más cartas ya están en el mazo.", ex);
-                            }
+                            await transaction.RollbackAsync();
                             throw new DatabaseException($"Error de base de datos: {ex.Message}", ex);
                         }
                     }

@@ -53,21 +53,8 @@ namespace ServicesLibrary.Services
         public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId, int playerId)
         {
 
-            // tengo que controlar que las cartas pertenezcan a la coleccion del player?
-
-
             if(cardIds.Count != 15)
                 throw new Exception("El mazo solo puede contener 15 cartas.");
-
-            if (await _playerCardDAO.GetDeckCardsQuantity(deckId) >= 15)
-                throw new Exception("No se pueden agregar mas cartas al mazo.");
-
-            //foreach (var cardId in cardIds)
-            //{
-            //    await _playerCardDAO.AssignCardToDeck(cardId, deckId);
-            //}
-
-            // 
 
             // chequeo que pertenezcan a la coleccion del jugador
             if (!await _playerCardDAO.CheckCardsInCollection(cardIds, playerId))
