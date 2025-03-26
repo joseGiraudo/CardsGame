@@ -199,36 +199,6 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId)
-        {
-            string query = @"SELECT EXISTS (
-                    SELECT 1
-                    FROM tournament_judges tj
-                    JOIN games g ON tj.tournamentId = g.tournamentId
-                    WHERE g.id = @GameId AND tj.judgeId = @JudgeId
-            ) AS isAvailable;";
-
-            try
-            {
-                using (var connection = new MySqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    var isAvailable = await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
-
-                    return isAvailable;
-                }
-            }
-            catch (MySqlException ex)
-            {
-                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
-            }
-
-        }
-
         public Task<int> Update(Game game)
         {
             throw new NotImplementedException();

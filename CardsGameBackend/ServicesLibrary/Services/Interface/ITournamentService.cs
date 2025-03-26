@@ -19,6 +19,7 @@ namespace ServicesLibrary.Services.Interface
         public Task<bool> AssignJudgeToTournament(int tournamentId, int judgeId);
         public Task<bool> AssignSeriesToTournament(int tournamentId, int seriesId);
         public Task AdvanceTournamentPhase(int tournamentId);
+        public Task FinalizeGame(int gameId, int winnerId, int judgeId);
         public int CalculateMaxPlayers(DateTime start, DateTime end);
         public Task<bool> DisqualifyPlayer(DisqualificationDTO disqualificationDTO, int judgeId);
         public Task CancelTournament(int tournamentId, int adminId);

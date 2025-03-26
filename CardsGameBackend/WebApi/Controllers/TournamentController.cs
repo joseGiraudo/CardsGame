@@ -153,6 +153,23 @@ namespace WebApi.Controllers
 
 
 
+        [Authorize(Roles = nameof(UserRole.Judge))]
+        [HttpPost("games/{gameId}/finalize")]
+        public async Task<IActionResult> FinalizeGame([FromBody] FinalizeGameDTO finalizeGameDTO, int gameId)
+        {
+            // Obtener el ID del usuario logueado desde los claims del token
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int judgeId))
+            {
+                return Unauthorized("No se pudo obtener el ID del juez.");
+            }
+
+            await _tournamentService.FinalizeGame(gameId, finalizeGameDTO.WinnerId, judgeId);
+
+            return Ok("Partida oficializada correctamente");
+        }
+
 
 
 

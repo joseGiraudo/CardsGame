@@ -287,11 +287,13 @@ SELECT * FROM tournament_players;
 
 SELECT * FROM games;
 
+SELECT COUNT(id) FROM games WHERE tournamentId = 3 AND winnerId IS NULL;
 
--- DELETE FROM games;
+
+-- DELETE FROM games where id = 52;
  
--- UPDATE tournaments SET PHASE = 'Registration', winnerId = null WHERE id = 1;
--- UPDATE games SET winnerId = NULL WHERE id = 52;
+-- UPDATE tournaments SET PHASE = 'InProgress', winnerId = null WHERE id = 1;
+-- UPDATE games SET winnerId = null WHERE id = 51;
 
 SELECT DISTINCT u.id
 FROM users u

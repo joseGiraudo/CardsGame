@@ -317,6 +317,46 @@ namespace ServicesLibrary.Services
             await _tournamentDAO.UpdateAsync(tournament);
         }
 
+        public async Task FinalizeGame(int gameId, int winnerId, int judgeId)
+        {
+            // El juez puede oficializar el game?
+            if (!await _tournamentDAO.IsJudgeAvailableInTournament(gameId, judgeId))
+                throw new Exception("El juez no pertenece a este torneo");
+
+
+            Game game = await _gameDAO.GetById(gameId);
+
+            if (game.WinnerId != null)
+                throw new InconsistentException("El juego ya fue oficializado");
+
+            //if (game.StartDate < DateTime.UtcNow)
+            //    throw new Exception("El juego no comenzo");
+
+            if (game.Player1 == winnerId)
+            {
+                game.WinnerId = winnerId;
+            }
+            else if (game.Player2 == winnerId)
+            {
+                game.WinnerId = winnerId;
+            }
+            else
+            {
+                throw new InconsistentException("El id de ganador no se encentra en esta partida");
+            }
+
+            // defino el ganador de la aprtida
+            await _gameDAO.SetGameWinner(gameId, winnerId);
+
+
+            // tengo que verificar si es el ultimo partido de la ronda y crear la siguiente ronda de partidos
+            if (await _tournamentDAO.CheckRoundFinished(game.TournamentId))
+            {
+                await AdvanceTournamentPhase(game.TournamentId);
+            }
+
+        }
+
         public int CalculateMaxPlayers(DateTime start, DateTime end)
         {
             int maxPlayers = 0;
@@ -374,6 +414,7 @@ namespace ServicesLibrary.Services
 
             return await _tournamentDAO.DisqualifyPlayer(disqualification);
         }
+
         public async Task CancelTournament(int tournamentId, int adminId)
         {
             var tournament = await _tournamentDAO.GetByIdAsync(tournamentId);
@@ -385,7 +426,6 @@ namespace ServicesLibrary.Services
             tournament.WinnerId = null;
             await _tournamentDAO.UpdateAsync(tournament);
         }
-
 
         private async Task<bool> CheckDeckInSeries(int deckId, int seriesId)
         {
@@ -406,7 +446,6 @@ namespace ServicesLibrary.Services
             // manejarlo en una consulta de sql
         }
         
-
         public Task<string> DeleteById(int id)
         {
             throw new NotImplementedException();
@@ -436,8 +475,7 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
-
-
+        
         // metodo para convertir los horarios del torneo en UTC
         private TimeSpan ConvertToUtc(TimeSpan time)
         {

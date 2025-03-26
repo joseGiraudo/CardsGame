@@ -239,16 +239,16 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<bool> CheckRoundFinished(int tournamentId)
         {
-            string query = "SELECT COUNT(id) FROM games WHERE tournamentId = @TournamentId AND winnerId != NULL;";
+            string query = "SELECT COUNT(id) FROM games WHERE tournamentId = @TournamentId AND winnerId IS NULL;";
 
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    var games = await connection.ExecuteScalarAsync<int>(query, new { TournamentId = tournamentId });
+                    var gamesNotFinished = await connection.ExecuteScalarAsync<int>(query, new { TournamentId = tournamentId });
 
-                    return games > 0;
+                    return gamesNotFinished == 0;
                 }
             }
             catch (MySqlException ex)
@@ -259,6 +259,36 @@ namespace DataAccessLibrary.DAOs
             {
                 throw new DatabaseException("Error inesperado al obtener los partidos no finalizados", ex);
             }
+        }
+
+        public async Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId)
+        {
+            string query = @"SELECT EXISTS (
+                    SELECT 1
+                    FROM tournament_judges tj
+                    JOIN games g ON tj.tournamentId = g.tournamentId
+                    WHERE g.id = @GameId AND tj.judgeId = @JudgeId
+            ) AS isAvailable;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var isAvailable = await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
+
+                    return isAvailable;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
+            }
+
         }
 
     }

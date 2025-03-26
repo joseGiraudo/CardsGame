@@ -34,39 +34,6 @@ namespace ServicesLibrary.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> FinalizeGame(int gameId, int winnerId, int judgeId)
-        {
-            // El juez puede oficializar el game?
-            if (!await _gameDAO.IsJudgeAvailableInTournament(gameId, judgeId))
-                throw new Exception("El juez no pertenece a este torneo");
-
-
-            Game game = await GetById(gameId);
-
-            if(game.WinnerId != null)
-                throw new InconsistentException("El juego ya fue oficializado");
-
-            if(game.StartDate < DateTime.UtcNow)
-                throw new Exception("El juego no comenzo");
-
-            if (game.Player1 == winnerId)
-            {
-                game.WinnerId = winnerId;
-            } else if (game.Player2 == winnerId) 
-            {
-                game.WinnerId = winnerId;
-            } else
-            {
-                throw new InconsistentException("El id de ganador no se encentra en esta partida");
-            }
-
-            // tengo que verificar si es el ultimo partido de la ronda y crear la siguiente ronda de partidos
-
-
-            return await _gameDAO.SetGameWinner(gameId, winnerId);
-
-        }
-
         public async Task<List<Game>> GetAll()
         {
             var games = (List<Game>) await _gameDAO.GetAll();

@@ -19,5 +19,7 @@ namespace DataAccessLibrary.DAOs.Interface
         public Task<bool> GetTournamentJudges(int tournamentId);
         Task<bool> DisqualifyPlayer(Disqualification disqualification);
         public Task<bool> CheckRoundFinished(int tournamentId);
+        public Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId);
+
     }
 }
