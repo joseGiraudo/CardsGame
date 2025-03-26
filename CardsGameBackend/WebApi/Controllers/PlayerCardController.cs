@@ -81,7 +81,7 @@ namespace WebApi.Controllers
             {
                 var (playerId, playerRole) = GetCurrentUserData();
 
-                if (await _playerCardService.AssignCardsToDeck(cardDTO.CardIds, deckId))
+                if (await _playerCardService.AssignCardsToDeck(cardDTO.CardIds, deckId, playerId))
                 {
                     return Ok("Cartas asignadas correctamente");
                 }

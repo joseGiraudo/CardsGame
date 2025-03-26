@@ -104,6 +104,21 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
+
+        public async Task<bool> CheckCardsInCollection(List<int> cardIds, int playerId)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            string query = @"SELECT COUNT(*) 
+                            FROM collections 
+                            WHERE playerId = @PlayerId AND cardId IN @CardIds;";
+
+            int count = await connection.ExecuteScalarAsync<int>(query, new { PlayerId = playerId, CardIds = cardIds });
+
+            return count == cardIds.Count; // Si el número de cartas encontradas es igual al total, todas están en la colección
+        }
+
         public async Task<bool> CreateDeck(string name, int playerId)
         {
             string query = @"INSERT INTO decks (playerId, name) " +
@@ -182,7 +197,6 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-
         public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
         {
             string query = @"INSERT INTO decks_cards (deckId, cardId) VALUES (@DeckId, @CardId);";
@@ -227,7 +241,6 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-
         public async Task<bool> RemoveCardFromDeck(int cardId, int deckId)
         {
             string query = @"DELETE FROM collections WHERE playerId = @PlayerId AND deckId = @DeckId;";
@@ -250,6 +263,7 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
+
         public async Task<int> GetDeckCardsQuantity(int deckId)
         {
             string query = @"SELECT COUNT(cardId) FROM decks_cards WHERE deckId = @DeckId;";
@@ -272,6 +286,7 @@ namespace DataAccessLibrary.DAOs
                 throw new DatabaseException($"Error inesperado: {ex.Message}", ex);
             }
         }
+
         public async Task<IEnumerable<Card>> GetCardsByDeckId(int deckId)
         {
             string query = @"SELECT c.id, c.name, c.attack, c.defense, c.illustration

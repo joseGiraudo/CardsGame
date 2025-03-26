@@ -50,7 +50,7 @@ namespace ServicesLibrary.Services
             return false;
         }
 
-        public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId)
+        public async Task<bool> AssignCardsToDeck(List<int> cardIds, int deckId, int playerId)
         {
 
             // tengo que controlar que las cartas pertenezcan a la coleccion del player?
@@ -62,11 +62,20 @@ namespace ServicesLibrary.Services
             if (await _playerCardDAO.GetDeckCardsQuantity(deckId) >= 15)
                 throw new Exception("No se pueden agregar mas cartas al mazo.");
 
-            foreach (var cardId in cardIds)
+            //foreach (var cardId in cardIds)
+            //{
+            //    await _playerCardDAO.AssignCardToDeck(cardId, deckId);
+            //}
+
+            // 
+
+            // chequeo que pertenezcan a la coleccion del jugador
+            if (!await _playerCardDAO.CheckCardsInCollection(cardIds, playerId))
             {
-                await _playerCardDAO.AssignCardToDeck(cardId, deckId);
+                throw new Exception("Una o más cartas no pertenecen a tu colección. No se puede crear el mazo");
             }
-            return true;
+
+            return await _playerCardDAO.AssignCardsToDeck(cardIds, deckId);
         }
 
         public async Task<bool> RemoveCardFromDeck(int cardId, int deckId)
