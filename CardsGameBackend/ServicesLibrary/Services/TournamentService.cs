@@ -329,8 +329,8 @@ namespace ServicesLibrary.Services
             if (game.WinnerId != null)
                 throw new InconsistentException("El juego ya fue oficializado");
 
-            //if (game.StartDate < DateTime.UtcNow)
-            //    throw new Exception("El juego no comenzo");
+            if (game.StartDate < DateTime.UtcNow)
+                throw new Exception("El juego no comenzo");
 
             if (game.Player1 == winnerId)
             {
