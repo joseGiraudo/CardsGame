@@ -25,18 +25,6 @@ CREATE TABLE users (
     FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE SET NULL
 );
 
-INSERT INTO countries (NAME) VALUES('ARG');
-INSERT INTO countries (NAME) VALUES('URU');
-INSERT INTO countries (NAME) VALUES('CHI');
-INSERT INTO countries (NAME) VALUES('BR');
-INSERT INTO countries (NAME) VALUES('BOL');
-
-INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('Admin', 'admin', 'admin@correo.com', 'admin123', 1, 'https://example.com/avatar.png', 'Admin', NULL);
- 
-INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
- VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
-
  -- SELECT * FROM users;
  -- SELECT * FROM countries;
  -- SELECT * FROM tournaments;

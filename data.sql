@@ -3,6 +3,25 @@
 
 USE cardsgamedb;
 
+
+-- countries
+INSERT INTO countries (NAME) VALUES('ARG');
+INSERT INTO countries (NAME) VALUES('URU');
+INSERT INTO countries (NAME) VALUES('CHI');
+INSERT INTO countries (NAME) VALUES('BR');
+INSERT INTO countries (NAME) VALUES('BOL');
+
+
+
+
+-- users
+INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
+ VALUES ('Admin', 'admin', 'admin@correo.com', 'admin123', 1, 'https://example.com/avatar.png', 'Admin', NULL);
+ 
+INSERT INTO users (name, username, email, password, countryId, avatar, role, createdBy)
+ VALUES ('tester', 'tester', 'tester@correo.com', 'tester123', 1, 'https://example.com/avatar.png', 'Player', NULL);
+
+
 -- 100 cards
 INSERT INTO cards (name, attack, defense, illustration) VALUES ('Dragon Guardian', 85, 95, 'dragon_guardian.jpg');
 INSERT INTO cards (name, attack, defense, illustration) VALUES ('Shadow Assassin', 90, 40, 'shadow_assassin.jpg');
@@ -232,8 +251,9 @@ SELECT * FROM cards_series;
 
 
 
--- creo las collections de cada player
 
+/*
+-- creo las collections de cada player
 INSERT INTO collections (playerId, cardId) VALUES (8, 1);
 INSERT INTO collections (playerId, cardId) VALUES (8, 2);
 INSERT INTO collections (playerId, cardId) VALUES (8, 3);
@@ -242,9 +262,9 @@ INSERT INTO collections (playerId, cardId) VALUES (8, 5);
 
 SELECT * FROM collections;
 
+*/
 
-
-
+/*
 -- creo los mazos para cada player del 1 al 20
 
 INSERT INTO decks (playerId, name) VALUES (8, 'deck 1');
@@ -269,10 +289,11 @@ INSERT INTO decks (playerId, name) VALUES (26, 'deck 19');
 INSERT INTO decks (playerId, name) VALUES (27, 'deck 20');
 
 SELECT * FROM decks;
-
+*/
 
 -- tengo que cargar las cards en los decks
 
+/*
 SELECT * FROM users WHERE ROLE = 'Player';
 
 SELECT * FROM decks_cards;
@@ -295,6 +316,9 @@ SELECT COUNT(id) FROM games WHERE tournamentId = 3 AND winnerId IS NULL;
 -- UPDATE tournaments SET PHASE = 'InProgress', winnerId = null WHERE id = 1;
 -- UPDATE games SET winnerId = null WHERE id = 51;
 
+*/
+
+/*
 SELECT DISTINCT u.id
 FROM users u
 JOIN games g ON u.id = g.player1 OR (u.id = g.player2 AND g.player2 IS NOT NULL)
@@ -310,6 +334,6 @@ AND u.id NOT IN (
   AND (g.player1 != g.winnerId OR (g.player2 IS NOT NULL AND g.player2 != g.winnerId)) -- Evita NULLs
 );
 
-
+*/
 
 
