@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLibrary.DAOs;
 using DataAccessLibrary.DAOs.Interface;
+using ModelsLibrary.DTOs.Cards;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services.Interface;
 
@@ -20,23 +21,22 @@ namespace ServicesLibrary.Services
         }
 
 
-        public async Task<Card> Create(Card card)
+        public async Task<int> Create(CardDTO cardDTO)
         {
-            try
+            Card card = new Card
             {
-                var cardId = await _cardDAO.Create(card);
+                Name = cardDTO.Name,
+                Attack = cardDTO.Attack,
+                Defense = cardDTO.Defense,
+                Illustration = cardDTO.Illustration
+            };
 
-                return card;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return await _cardDAO.Create(card);
         }
 
-        public Task<string> DeleteById(int id)
+        public async Task<bool> DeleteById(int id)
         {
-            throw new NotImplementedException();
+            return await _cardDAO.Delete(id);
         }
 
         public async Task<List<Card>> GetAll()
@@ -67,9 +67,18 @@ namespace ServicesLibrary.Services
             }
         }
 
-        public Task<Card> Update(Card card)
+        public async Task<bool> Update(int cardId, CardDTO cardDTO)
         {
-            throw new NotImplementedException();
+            Card card = new Card
+            {
+                Id = cardId,
+                Name = cardDTO.Name,
+                Attack = cardDTO.Attack,
+                Defense = cardDTO.Defense,
+                Illustration = cardDTO.Illustration
+            };
+
+            return await _cardDAO.Update(card);
         }
     }
 }

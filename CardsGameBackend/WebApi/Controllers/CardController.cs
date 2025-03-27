@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ModelsLibrary.DTOs.Cards;
 using ModelsLibrary.Enums;
 using ModelsLibrary.Models;
 using ServicesLibrary.Services;
@@ -25,28 +26,52 @@ namespace WebApi.Controllers
             return Ok(cards);
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetCardById(int id)
         {
             var card = await _cardService.GetById(id);
+            if (card == null)
+            {
+                return NotFound(new { message = "Carta no encontrada" });
+            }
             return Ok(card);
         }
 
         [Authorize(Roles = nameof(UserRole.Admin))]
         [HttpPost]
-        public async Task<IActionResult> CreateCard([FromBody] Card card)
+        public async Task<IActionResult> CreateCard([FromBody] CardDTO cardDTO)
         {
-            if (card == null)
-            {
-                return BadRequest("Los campos son incorrectos");
-            }
+            int id = await _cardService.Create(cardDTO);
 
-            var cardCreated = await _cardService.Create(card);
-            return Ok(cardCreated);
+            return CreatedAtAction(nameof(GetCardById), new { id }, new { id }); // 201 Created
         }
 
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCard([FromBody] CardDTO cardDTO, [FromRoute] int id)
+        {
+            bool updated = await _cardService.Update(id, cardDTO);
 
-        // endpoints para crear un mazo
+            if (!updated)
+            {
+                return NotFound(new { message = "Carta no encontrada" });
+            }
 
+            return NoContent();
+        }
+
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCard(int id)
+        {
+            bool deleted = await _cardService.DeleteById(id);
+
+            if (!deleted)
+            {
+                return NotFound(new { message = "Carta no encontrada" });
+            }
+
+            return NoContent();
+        }
     }
 }

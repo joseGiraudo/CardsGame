@@ -12,7 +12,7 @@ namespace DataAccessLibrary.DAOs.Interface
         Task<IEnumerable<Card>> GetAll();
         Task<Card> GetById(int id);
         Task<int> Create(Card card);
-        Task<int> Update(Card card);
-        Task<int> Delete(int id);
+        Task<bool> Update(Card card);
+        Task<bool> Delete(int id);
     }
 }

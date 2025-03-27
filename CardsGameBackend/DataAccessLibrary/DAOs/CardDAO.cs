@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,22 +24,24 @@ namespace DataAccessLibrary.DAOs
 
         public async Task<int> Create(Card card)
         {
-            string query = @"INSERT INTO cards (name, attack, defense, illustration) " +
-                            "VALUES(@name, @attack, @defense, @illustration); " +
-                            "SELECT LAST_INSERT_ID();";
+            string query = @"INSERT INTO cards (name, attack, defense, illustration)
+                            VALUES(@name, @attack, @defense, @illustration);
+                            SELECT LAST_INSERT_ID();";
 
             try
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();
-                    return await connection.ExecuteScalarAsync<int>(query, new
+                    int cardId = await connection.ExecuteScalarAsync<int>(query, new
                     {
                         name = card.Name,
                         attack = card.Attack,
                         defense = card.Defense,
                         illustration = card.Illustration
                     });
+
+                    return cardId;
                 }
             }
             catch (MySqlException ex)
@@ -52,9 +55,26 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            string query = "DELETE FROM cards WHERE id = @id;";
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { id });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al eliminar la carta: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al eliminar la carta", ex);
+            }
         }
 
         public async Task<IEnumerable<Card>> GetAll()
@@ -95,10 +115,10 @@ namespace DataAccessLibrary.DAOs
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    var card = await connection.QueryFirstOrDefaultAsync<Card>(query);
+                    var card = await connection.QueryFirstOrDefaultAsync<Card>(query, new {id});
                     if (card == null)
                     {
-                        throw new Exception("Carta no encontrada");
+                        throw new NotFoundException("Carta no encontrada");
                     }
 
                     return card;
@@ -108,13 +128,13 @@ namespace DataAccessLibrary.DAOs
             {
                 throw new DatabaseException($"Error al obtener la carta: {ex.Message}", ex);
             }
-            catch (Exception ex)
-            {
-                throw new DatabaseException("Error inesperado al obtener la carta", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new DatabaseException("Error inesperado al obtener la carta", ex);
+            //}
         }
 
-        public async Task<int> Update(Card card)
+        public async Task<bool> Update(Card card)
         {
             string query = @"UPDATE cards 
                  SET name = @name, 
@@ -128,7 +148,7 @@ namespace DataAccessLibrary.DAOs
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
-                    return await connection.ExecuteAsync(query, new
+                    int rowsAffected = await connection.ExecuteAsync(query, new
                     {
                         name = card.Name,
                         attack = card.Attack,
@@ -136,6 +156,8 @@ namespace DataAccessLibrary.DAOs
                         illustration = card.Illustration,
                         id = card.Id
                     });
+
+                    return rowsAffected > 0;
                 }
             }
             catch (MySqlException ex)

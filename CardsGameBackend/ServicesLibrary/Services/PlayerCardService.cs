@@ -32,7 +32,6 @@ namespace ServicesLibrary.Services
 
         public async Task<bool> AssignCardToCollection(int cardId, int playerId)
         {
-            // tengo que verificar que la carta exista?
 
             if (await _playerCardDAO.AssignCardToCollection(cardId, playerId))
             {

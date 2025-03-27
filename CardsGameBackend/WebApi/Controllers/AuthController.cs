@@ -34,11 +34,6 @@ namespace WebApi.Controllers
             return Ok(new { token });
         }
 
-        [HttpPost("logout")]
-        public IActionResult Logout()
-        {
-            return Ok(new { message = "Log Out" });
-        }
 
         //[HttpPost("refresh-token")]
         //public async Task<IActionResult> RefreshTokenAsync()

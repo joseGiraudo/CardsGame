@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using DataAccessLibrary.Exceptions;
 using MySqlX.XDevAPI.Common;
 using ServicesLibrary.Exceptions;
 
@@ -38,6 +39,22 @@ namespace WebApi.Middlewares
 
             }
             catch (UserException ex)
+            {
+                var response = context.Response;
+                response.ContentType = "application/json";
+                context.Response.StatusCode = ex.StatusCode;
+
+                var result = JsonSerializer.Serialize(new
+                {
+                    message = ex.Message,
+                    statusCode = ex.StatusCode
+                });
+
+
+                await response.WriteAsync(result);
+
+            }
+            catch (HandleDatabaseException ex)
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
