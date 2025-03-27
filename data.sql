@@ -306,7 +306,11 @@ SELECT * FROM users;
 
 SELECT * FROM tournament_players;
 
+SELECT * FROM tournament_series;
+
 SELECT * FROM games;
+
+	SELECT * FROM disqualifications;
 
 SELECT COUNT(id) FROM games WHERE tournamentId = 3 AND winnerId IS NULL;
 
