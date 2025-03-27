@@ -116,10 +116,6 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     var card = await connection.QueryFirstOrDefaultAsync<Card>(query, new {id});
-                    if (card == null)
-                    {
-                        throw new NotFoundException("Carta no encontrada");
-                    }
 
                     return card;
                 }
@@ -128,10 +124,10 @@ namespace DataAccessLibrary.DAOs
             {
                 throw new DatabaseException($"Error al obtener la carta: {ex.Message}", ex);
             }
-            //catch (Exception ex)
-            //{
-            //    throw new DatabaseException("Error inesperado al obtener la carta", ex);
-            //}
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener la carta", ex);
+            }
         }
 
         public async Task<bool> Update(Card card)

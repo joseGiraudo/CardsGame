@@ -52,26 +52,35 @@ namespace DataAccessLibrary.DAOs
             }
             catch (MySqlException ex)
             {
-                switch (ex.Number)
-                {
-                    case 1062: // Duplicate entry
-                        throw new DatabaseException($"Duplicate entry for email: {user.Email}", ex);
-                    case 1452: // Foreign key violation
-                        throw new DatabaseException($"Invalid reference: CountryId {user.CountryId} or CreatedBy {user.CreatedBy}", ex);
-                    default:
-                        throw new DatabaseException($"Database error creating user: {ex.Message}", ex);
-                }
+                throw new DatabaseException($"Error de Base de datos Creando el usuario: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Unexpected error creating user", ex);
+                throw new DatabaseException("Error inesperado creando el usuario", ex);
             }
 
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            string query = "DELETE FROM users WHERE id = @id;";
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    int rowsAffected = await connection.ExecuteAsync(query, new { id });
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al eliminar el usuario: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al eliminar el usuario", ex);
+            }
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -85,11 +94,6 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     var users = await connection.QueryAsync<User>(query);
-                    if (users == null || users.Count() < 1)
-                    {
-                        throw new Exception("Usuarios no encontrados");
-                    }
-
                     return users;
                 }
             }
@@ -182,9 +186,46 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public Task<int> Update(User user)
+        public async Task<bool> Update(User user)
         {
-            throw new NotImplementedException();
+            string query = @"UPDATE users 
+                     SET name = @Name, 
+                         username = @Username, 
+                         email = @Email, 
+                         password = @Password, 
+                         countryId = @CountryId, 
+                         avatar = @Avatar, 
+                         role = @Role
+                     WHERE id = @Id;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+                    int rowsAffected = await connection.ExecuteAsync(query, new
+                    {
+                        user.Name,
+                        user.Username,
+                        user.Email,
+                        user.Password,
+                        user.CountryId,
+                        user.Avatar,
+                        Role = user.Role.ToString(),
+                        user.Id
+                    });
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error de Base de datos actualizando el usuario: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado actualizando el usuario", ex);
+            }
         }
     }
 }

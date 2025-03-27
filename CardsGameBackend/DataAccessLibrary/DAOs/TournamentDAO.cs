@@ -108,10 +108,6 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     var tournament = await connection.QueryFirstOrDefaultAsync<Tournament>(query, new { id = id });
-                    if (tournament == null)
-                    {
-                        throw new Exception("No se encontro el torneo");
-                    }
                     return tournament;
                 }
             }

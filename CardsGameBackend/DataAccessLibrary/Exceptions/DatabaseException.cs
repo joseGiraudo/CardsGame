@@ -11,21 +11,4 @@ namespace DataAccessLibrary.Exceptions
         public DatabaseException(string message, Exception inner)
             : base(message, inner) { }
     }
-
-    public class HandleDatabaseException : Exception
-    {
-        public int StatusCode { get; }
-        protected HandleDatabaseException(string message, int statusCode = 500)
-            : base(message)
-        {
-            StatusCode = statusCode;
-        }
-    }
-
-    public class NotFoundException : HandleDatabaseException
-    {
-
-        public NotFoundException(string message)
-            : base(message, 404) { }
-    }
 }

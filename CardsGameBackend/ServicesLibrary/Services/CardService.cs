@@ -7,6 +7,7 @@ using DataAccessLibrary.DAOs;
 using DataAccessLibrary.DAOs.Interface;
 using ModelsLibrary.DTOs.Cards;
 using ModelsLibrary.Models;
+using ServicesLibrary.Exceptions;
 using ServicesLibrary.Services.Interface;
 
 namespace ServicesLibrary.Services
@@ -55,16 +56,14 @@ namespace ServicesLibrary.Services
 
         public async Task<Card> GetById(int id)
         {
-            try
-            {
-                var card = await _cardDAO.GetById(id);
+            var card = await _cardDAO.GetById(id);
 
-                return card;
-            }
-            catch (Exception ex)
+            if (card == null)
             {
-                throw ex;
+                throw new NotFoundException("No se encontro la carta con id: " + id);
             }
+
+            return card;
         }
 
         public async Task<bool> Update(int cardId, CardDTO cardDTO)

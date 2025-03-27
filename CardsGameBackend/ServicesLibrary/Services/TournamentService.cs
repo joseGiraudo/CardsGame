@@ -467,6 +467,9 @@ namespace ServicesLibrary.Services
         public async Task<Tournament> GetById(int id)
         {
             var tournament = await _tournamentDAO.GetByIdAsync(id);
+            if (tournament == null)
+                throw new NotFoundException("No se encontró el torneo con id: " + id);
+
             return tournament;
         }
 

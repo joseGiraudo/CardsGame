@@ -56,69 +56,67 @@ namespace ServicesLibrary.Services
 
         public async Task<List<User>> GetAll()
         {
-            try
-            {
-                var users = await _userDAO.GetAll();
+            var users = await _userDAO.GetAll();
 
-                return (List<User>)users;
-            }
-            catch (Exception ex)
+            if (users == null || users.Count() < 1)
             {
-                throw ex;
+                throw new NotFoundException("No se encontraron usuarios");
             }
+
+            return (List<User>)users;
         }
 
         public async Task<User> GetById(int id, int userId, UserRole userRole)
         {
-            try
-            {
-                var user = await _userDAO.GetById(id);
+            var user = await _userDAO.GetById(id);
 
-                if((userRole == UserRole.Player || userRole == UserRole.Judge) && userId != user.Id)
-                {
-                    user.Name = null;
-                    user.Email = null;
-                    // ver si así esta bien
-                }
-
-                return user;
-            }
-            catch (Exception ex)
+            if (user == null)
             {
-                throw ex;
+                throw new NotFoundException("No se encontro el usuario con id: " + id);
             }
+
+            if ((userRole == UserRole.Player || userRole == UserRole.Judge) && userId != user.Id)
+            {
+                user.Name = null;
+                user.Email = null;
+                // ver si así esta bien
+            }
+
+            return user;
         }
 
         public async Task<User> GetById(int id)
         {
-            try
+            var user = await _userDAO.GetById(id);
+
+            if (user == null)
             {
-                var user = await _userDAO.GetById(id);
-                return user;
+                throw new NotFoundException("No se encontro el usuario con id: " + id);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return user;
         }
 
         public async Task<User> GetByEmail(string email)
         {
-            try
-            {
-                var user = await _userDAO.GetByEmail(email);
+            var user = await _userDAO.GetByEmail(email);
 
-                return user;
-            }
-            catch (Exception ex)
+            if (user == null)
             {
-                throw ex;
+                throw new NotFoundException("No se encontro el usuario con email: " + email);
             }
+
+            return user;
         }
 
-        public Task<User> Update(User user)
+        public async Task<User> Update(User user)
         {
-            throw new NotImplementedException();
+            if(await _userDAO.Update(user))
+            {
+                return user;
+            }
+            throw new NotFoundException("No se encontro el usuario con id: " + user.Id);
+
+
         }
 
         private async Task ValidateUserCreation(UserDTO userDTO, int? creatorId, UserRole? creatorRole)
@@ -167,16 +165,6 @@ namespace ServicesLibrary.Services
 
             if (user != null)
                 throw new DuplicateUsernameException("El username ya se encuentra registrado");
-
-
-            if (string.IsNullOrWhiteSpace(userDTO.Email))
-                throw new UserException("El email es requerido");
-
-            if (string.IsNullOrWhiteSpace(userDTO.Password))
-                throw new UserException("La contraseña es requerida");
-
-            if (string.IsNullOrWhiteSpace(userDTO.Username))
-                throw new UserException("El nombre de usuario es requerido");
 
         }
     }
