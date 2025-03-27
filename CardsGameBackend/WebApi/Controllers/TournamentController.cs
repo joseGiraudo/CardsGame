@@ -135,7 +135,7 @@ namespace WebApi.Controllers
 
 
         [Authorize(Roles = nameof(UserRole.Organizer))]
-        [HttpPut("{tournamentId}/phase")]
+        [HttpPut("{tournamentId}/advance")]
         public async Task<IActionResult> AdvanceTournamentPhase(int tournamentId)
         {
             string userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -178,7 +178,7 @@ namespace WebApi.Controllers
 
 
 
-
+        /*
 
         // ESTE METODO ESTA EXPUESTO PARA PROBARLO UNICAMENTE
         [HttpGet("max-players/{tournamentId}")]
@@ -195,5 +195,6 @@ namespace WebApi.Controllers
                 return BadRequest($"Error: {ex.Message}");
             }
         }
+        */
     }
 }

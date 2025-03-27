@@ -257,7 +257,7 @@ namespace DataAccessLibrary.DAOs
             }
         }
 
-        public async Task<bool> IsJudgeAvailableInTournament(int gameId, int judgeId)
+        public async Task<bool> IsJudgeAuthorizedByGame(int gameId, int judgeId)
         {
             string query = @"SELECT EXISTS (
                     SELECT 1
@@ -272,6 +272,35 @@ namespace DataAccessLibrary.DAOs
                 {
                     connection.Open();
                     var isAvailable = await connection.ExecuteScalarAsync<bool>(query, new { GameId = gameId, JudgeId = judgeId });
+
+                    return isAvailable;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new DatabaseException($"Error al obtener las partidas: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Error inesperado al obtener las partidas", ex);
+            }
+
+        }
+
+        public async Task<bool> IsJudgeAuthorizedByTournament(int tournamentId, int judgeId)
+        {
+            string query = @"SELECT EXISTS (
+                    SELECT 1
+                    FROM tournament_judges tj
+                    WHERE tj.tournamentId = @TournamentId AND tj.judgeId = @JudgeId
+            ) AS isAvailable;";
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var isAvailable = await connection.ExecuteScalarAsync<bool>(query, new { TournamentId = tournamentId, JudgeId = judgeId });
 
                     return isAvailable;
                 }

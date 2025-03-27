@@ -30,7 +30,6 @@ namespace ServicesLibrary.Services
             if (card == null)
                 throw new NotFoundException("No se encontro la carta con id: " + cardId);
 
-            // tengo que validar que la carta exista y que la serie exista??????
 
             return await _seriesDAO.AssignCardToSeries(cardId, seriesId);
         }

@@ -122,6 +122,10 @@ namespace ServicesLibrary.Services
             if (deckId <= 0)
                 throw new InvalidDeckException("Debes seleccionar un mazo para el torneo");
 
+            if(await _playerCardDAO.GetDeckCardsQuantity(deckId) != 15)
+            {
+                throw new InvalidDeckException("El mazo debe poseer 15 cartas para ingresar al torneo");
+            }
             // revisar que el mazo este permitido
             var invalidCards = await _tournamentPlayerDAO.GetInvalidCards(deckId, tournamentId);
 
@@ -320,8 +324,8 @@ namespace ServicesLibrary.Services
         public async Task FinalizeGame(int gameId, int winnerId, int judgeId)
         {
             // El juez puede oficializar el game?
-            if (!await _tournamentDAO.IsJudgeAvailableInTournament(gameId, judgeId))
-                throw new Exception("El juez no pertenece a este torneo");
+            if (!await _tournamentDAO.IsJudgeAuthorizedByGame(gameId, judgeId))
+                throw new UnauthorizedException("El juez no pertenece a este torneo");
 
 
             Game game = await _gameDAO.GetById(gameId);
@@ -398,8 +402,9 @@ namespace ServicesLibrary.Services
         {
 
             // primero chequear que el juez pertenezca al torneo
+            if (!await _tournamentDAO.IsJudgeAuthorizedByTournament(disqualificationDTO.TournamentId, judgeId))
+                throw new UnauthorizedException("El juez no pertenece a este torneo");
 
-            // chequeo que el player pertenezca al torneo
 
             // descalificarlo
             Disqualification disqualification = new Disqualification
